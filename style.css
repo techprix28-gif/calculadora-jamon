@@ -698,14 +698,69 @@ input[type="range"]::-moz-range-thumb:hover {
     background: rgba(250, 246, 241, 0.5);
 }
 
-@media (max-width: 400px) {
-    .profit-stats {
-        grid-template-columns: 1fr;
+/* ========================================
+   📱 RESPONSIVE DESIGN - Mobile Optimizado
+   ======================================== */
+
+/* Tablets y pantallas medianas */
+@media (max-width: 768px) {
+    body {
+        padding: 16px;
     }
 
-    .stat-box.profit,
-    .stat-box.local {
-        grid-column: span 1;
+    .container {
+        max-width: 100%;
+    }
+
+    header h1 {
+        font-size: 1.75rem;
+    }
+
+    header p {
+        font-size: 0.95rem;
+    }
+
+    .card {
+        padding: 24px;
+    }
+
+    .controls {
+        gap: 18px;
+    }
+
+    /* Inputs más grandes para táctil */
+    select,
+    input[type="number"],
+    input[type="text"] {
+        padding: 16px 18px;
+        font-size: 16px;
+        /* Evita zoom en iOS */
+    }
+
+    .btn-secondary,
+    .btn-primary {
+        padding: 14px;
+        min-height: 44px;
+        /* Tamaño táctil recomendado */
+    }
+
+    .result-item {
+        padding: 14px;
+    }
+
+    .stat-box {
+        padding: 14px;
+    }
+}
+
+/* Móviles en landscape */
+@media (max-width: 768px) and (orientation: landscape) {
+    body {
+        padding: 12px;
+    }
+
+    header {
+        margin-bottom: 20px;
     }
 
     header h1 {
@@ -714,5 +769,309 @@ input[type="range"]::-moz-range-thumb:hover {
 
     .card {
         padding: 20px;
+    }
+
+    .controls {
+        gap: 14px;
+    }
+
+    .modal-content {
+        max-height: 85vh;
+    }
+}
+
+/* Móviles grandes (480px - 640px) */
+@media (max-width: 640px) {
+    header h1 {
+        font-size: 1.6rem;
+    }
+
+    .profit-stats {
+        gap: 10px;
+    }
+
+    .stat-box.profit .stat-value {
+        font-size: 1.4rem;
+    }
+
+    .stat-box.local .stat-value {
+        font-size: 1.2rem;
+    }
+
+    .result-item.highlight .value {
+        font-size: 1.2rem;
+    }
+
+    /* Botones de configuración en columna en móvil */
+    .button-group {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .btn-secondary {
+        width: 100%;
+    }
+}
+
+/* Móviles medianos (hasta 480px) */
+@media (max-width: 480px) {
+    body {
+        padding: 12px;
+    }
+
+    header {
+        margin-bottom: 24px;
+    }
+
+    header h1 {
+        font-size: 1.5rem;
+        letter-spacing: -0.3px;
+    }
+
+    header p {
+        font-size: 0.9rem;
+    }
+
+    .card {
+        padding: 20px;
+        border-radius: 16px;
+    }
+
+    .controls {
+        gap: 16px;
+    }
+
+    .control-group label {
+        font-size: 0.7rem;
+    }
+
+    /* Profit stats en columna */
+    .profit-stats {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .stat-box.profit,
+    .stat-box.local {
+        grid-column: span 1;
+    }
+
+    /* Resultados más compactos */
+    .result-item {
+        padding: 12px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+
+    .result-item .label {
+        font-size: 0.85rem;
+    }
+
+    .result-item .value {
+        font-size: 1.1rem;
+        align-self: flex-end;
+    }
+
+    .result-item.highlight .value {
+        font-size: 1.3rem;
+    }
+
+    /* Modal adaptado a móvil */
+    .modal-content {
+        width: 95%;
+        max-width: none;
+        border-radius: 16px;
+    }
+
+    .modal-header {
+        padding: 16px 20px;
+    }
+
+    .modal-header h3 {
+        font-size: 1.1rem;
+    }
+
+    .modal-body {
+        padding: 20px;
+    }
+
+    .modal-footer {
+        padding: 16px 20px;
+    }
+}
+
+/* Móviles pequeños (320px - 400px) */
+@media (max-width: 400px) {
+    body {
+        padding: 10px;
+    }
+
+    header h1 {
+        font-size: 1.35rem;
+    }
+
+    header p {
+        font-size: 0.85rem;
+    }
+
+    .card {
+        padding: 16px;
+    }
+
+    .controls {
+        gap: 14px;
+    }
+
+    /* Inputs optimizados para pantallas pequeñas */
+    select,
+    input[type="number"],
+    input[type="text"] {
+        padding: 14px 16px;
+        font-size: 16px;
+    }
+
+    .control-group label {
+        font-size: 0.65rem;
+    }
+
+    /* Botones con mejor área táctil */
+    .btn-secondary,
+    .btn-primary {
+        padding: 16px;
+        min-height: 48px;
+        font-size: 0.95rem;
+    }
+
+    .toggle-btn {
+        padding: 12px 8px;
+        font-size: 0.85rem;
+    }
+
+    /* Resultados ultra compactos */
+    .results h2 {
+        font-size: 1rem;
+        margin-bottom: 12px;
+    }
+
+    .result-grid {
+        gap: 10px;
+    }
+
+    .result-item {
+        padding: 10px;
+    }
+
+    .result-item .label {
+        font-size: 0.8rem;
+    }
+
+    .result-item .value {
+        font-size: 1rem;
+    }
+
+    .result-item.highlight .value {
+        font-size: 1.2rem;
+    }
+
+    .stat-box {
+        padding: 12px;
+    }
+
+    .stat-box.profit .stat-value {
+        font-size: 1.3rem;
+    }
+
+    .stat-box.local .stat-value {
+        font-size: 1.1rem;
+    }
+
+    .stat-label {
+        font-size: 0.65rem;
+    }
+
+    .stat-value {
+        font-size: 1rem;
+    }
+
+    /* Modal casi fullscreen en móviles pequeños */
+    .modal-content {
+        width: 98%;
+        max-height: 95vh;
+        border-radius: 12px;
+    }
+
+    .modal-header h3 {
+        font-size: 1rem;
+    }
+
+    .close-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 1.3rem;
+    }
+
+    .price-row label {
+        font-size: 0.8rem;
+    }
+}
+
+/* Móviles muy pequeños (menos de 320px) */
+@media (max-width: 320px) {
+    body {
+        padding: 8px;
+    }
+
+    header h1 {
+        font-size: 1.2rem;
+    }
+
+    .card {
+        padding: 12px;
+    }
+
+    .result-item {
+        padding: 8px;
+    }
+
+    .result-item .label,
+    .result-item .value {
+        font-size: 0.9rem;
+    }
+}
+
+/* Optimización para dispositivos con touch */
+@media (hover: none) and (pointer: coarse) {
+
+    /* Aumentar áreas táctiles */
+    select,
+    input,
+    button {
+        min-height: 44px;
+    }
+
+    /* Eliminar efectos hover en dispositivos táctiles */
+    .result-item:hover {
+        transform: none;
+    }
+
+    .stat-box:hover {
+        transform: none;
+    }
+
+    .btn-secondary:hover,
+    .btn-primary:hover {
+        transform: none;
+    }
+
+    /* Mantener solo el efecto activo/touch */
+    .btn-secondary:active,
+    .btn-primary:active {
+        transform: scale(0.98);
+    }
+
+    select:focus,
+    input:focus {
+        transform: none;
     }
 }

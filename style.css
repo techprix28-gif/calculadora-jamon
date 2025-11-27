@@ -171,15 +171,26 @@ input[type="range"] {
 }
 
 /* Buttons */
+.button-group {
+    display: flex;
+    gap: 10px;
+}
+
 .btn-secondary {
+    flex: 1;
     background: transparent;
     border: 1px dashed var(--text-light);
     color: var(--text-light);
-    padding: 8px;
+    padding: 10px;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
+    font-weight: 600;
     transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
 }
 
 .btn-secondary:hover {

@@ -47,35 +47,51 @@
                         <select id="quantity-pieces">
                             <option value="0.5">1/2 Pieza</option>
                             <option value="1" selected>1 Pieza</option>
+                            <option value="2">2 Piezas</option>
+                            <option value="3">3 Piezas</option>
                             <option value="5">5 Piezas</option>
-                            <option value="10">10 Piezas</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="control-group hidden" id="group-grams">
-                    <label for="quantity-grams">Cantidad (Gramos)</label>
+                    <label>Cantidad (Gramos)</label>
                     <div class="input-wrapper">
-                        <input type="number" id="quantity-grams" min="100" max="1000" step="50" value="500">
+                        <input type="number" id="quantity-grams" value="1000" step="100">
                         <span class="currency-label">g</span>
                     </div>
                     <div class="range-wrapper">
-                        <input type="range" id="range-grams" min="100" max="1000" step="50" value="500">
+                        <input type="range" id="range-grams" min="100" max="10000" step="100" value="1000">
                     </div>
                 </div>
+
+                <div class="divider"></div>
 
                 <div class="control-group">
                     <label for="exchange-rate">Tasa de Cambio (Bs/USD)</label>
                     <div class="input-wrapper">
-                        <input type="number" id="exchange-rate" value="40.00" step="0.01">
+                        <input type="number" id="exchange-rate" value="40.00" step="0.10">
                         <span class="currency-label">Bs</span>
                     </div>
                 </div>
 
-                <button id="btn-config-prices" class="btn-secondary">⚙️ Actualizar Precios Ingredientes</button>
-            </section>
+                <div class="control-group">
+                    <label for="profit-margin">Margen de Ganancia (%)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="profit-margin" value="30" step="1" max="99">
+                        <span class="currency-label">%</span>
+                    </div>
+                </div>
 
-            <div class="divider"></div>
+                <div class="button-group">
+                    <button id="btn-config-prices" class="btn-secondary">
+                        <span>⚙️</span> Precios
+                    </button>
+                    <button id="btn-config-recipes" class="btn-secondary">
+                        <span>📝</span> Recetas
+                    </button>
+                </div>
+            </section>
 
             <section class="results">
                 <h2>Resultados de Producción</h2>
@@ -116,6 +132,8 @@
             </section>
         </main>
     </div>
+
+    <!-- Modal Precios -->
     <div id="price-modal" class="modal hidden">
         <div class="modal-content">
             <div class="modal-header">
@@ -130,6 +148,23 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal Recetas -->
+    <div id="recipe-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Editar Receta (<span id="recipe-modal-title"></span>)</h3>
+                <button id="close-recipe-modal" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body" id="recipe-list">
+                <!-- Recipe ingredients will be injected here -->
+            </div>
+            <div class="modal-footer">
+                <button id="save-recipe" class="btn-primary">Guardar Receta</button>
+            </div>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 

@@ -1,7 +1,8 @@
 // 1. Estructura de Datos (Backend Simulado)
 
 // A. Tabla de Recetas (RECETAS_DB)
-const RECETAS_DB = [
+// Intentamos cargar de LocalStorage primero
+let RECETAS_DB = JSON.parse(localStorage.getItem('RECETAS_DB')) || [
     { id_jamon: 'JAMON-A', ingrediente: 'Pierna de Cerdo', unidad: 'Kg', cantidad: 5.00 },
     { id_jamon: 'JAMON-A', ingrediente: 'Sal Gruesa', unidad: 'Kg', cantidad: 0.30 },
     { id_jamon: 'JAMON-A', ingrediente: 'Azúcar', unidad: 'Kg', cantidad: 0.10 },
@@ -17,7 +18,6 @@ const RECETAS_DB = [
 ];
 
 // B. Tabla de Costos Unitarios (COSTOS_DB)
-// Intentamos cargar de LocalStorage primero
 let COSTOS_DB = JSON.parse(localStorage.getItem('COSTOS_DB')) || {
     'Pierna de Cerdo': 4.50,
     'Sal Gruesa': 0.80,
@@ -57,12 +57,20 @@ const priceUsdEl = document.getElementById('price-usd');
 const profitUsdEl = document.getElementById('profit-usd');
 const priceBsEl = document.getElementById('price-bs');
 
-// Modal Elements
-const modal = document.getElementById('price-modal');
+// Price Modal Elements
+const priceModal = document.getElementById('price-modal');
 const btnConfigPrices = document.getElementById('btn-config-prices');
-const btnCloseModal = document.getElementById('close-modal');
+const btnClosePriceModal = document.getElementById('close-modal');
 const btnSavePrices = document.getElementById('save-prices');
 const pricesListEl = document.getElementById('prices-list');
+
+// Recipe Modal Elements
+const recipeModal = document.getElementById('recipe-modal');
+const btnConfigRecipes = document.getElementById('btn-config-recipes');
+const btnCloseRecipeModal = document.getElementById('close-recipe-modal');
+const btnSaveRecipe = document.getElementById('save-recipe');
+const recipeListEl = document.getElementById('recipe-list');
+const recipeModalTitle = document.getElementById('recipe-modal-title');
 
 // --- Event Listeners ---
 
@@ -92,14 +100,25 @@ quantityGramsRange.addEventListener('input', (e) => {
 
 jamonSelect.addEventListener('change', calculate);
 quantityPiecesSelect.addEventListener('change', calculate);
+jamonSelect.addEventListener('change', calculate);
+quantityPiecesSelect.addEventListener('change', calculate);
 exchangeInput.addEventListener('input', calculate);
+document.getElementById('profit-margin').addEventListener('input', calculate);
 
-// Modal Events
+// Price Modal Events
 btnConfigPrices.addEventListener('click', openPriceModal);
-btnCloseModal.addEventListener('click', closePriceModal);
+btnClosePriceModal.addEventListener('click', () => priceModal.classList.add('hidden'));
 btnSavePrices.addEventListener('click', savePrices);
-modal.addEventListener('click', (e) => {
-    if (e.target === modal) closePriceModal();
+
+// Recipe Modal Events
+btnConfigRecipes.addEventListener('click', openRecipeModal);
+btnCloseRecipeModal.addEventListener('click', () => recipeModal.classList.add('hidden'));
+btnSaveRecipe.addEventListener('click', saveRecipe);
+
+// Close on outside click
+window.addEventListener('click', (e) => {
+    if (e.target === priceModal) priceModal.classList.add('hidden');
+    if (e.target === recipeModal) recipeModal.classList.add('hidden');
 });
 
 
@@ -113,11 +132,8 @@ function calculate() {
     let equivalentPieces = 0;
     const isPiecesMode = document.getElementById('unit-pieces').checked;
 
-    // Obtener peso de una pieza base para conversiones
-    // Asumimos que el peso de la pieza es la suma de la carne (Pierna de Cerdo)
-    // O usamos el dato fijo si lo tuviéramos. Usaremos Pierna de Cerdo como referencia de peso base.
     const baseRecipe = RECETAS_DB.find(r => r.id_jamon === selectedJamonId && r.ingrediente === 'Pierna de Cerdo');
-    const weightPerPieceKg = baseRecipe ? baseRecipe.cantidad : 5.0; // Fallback 5kg
+    const weightPerPieceKg = baseRecipe ? baseRecipe.cantidad : 5.0;
 
     if (isPiecesMode) {
         equivalentPieces = parseFloat(quantityPiecesSelect.value);
@@ -144,15 +160,10 @@ function calculate() {
         }
     });
 
-    // Escalar por la cantidad de piezas (o fracción de pieza)
     const totalIngredientsCost = unitIngredientsCost * equivalentPieces;
     const totalWeight = unitWeight * equivalentPieces;
 
     // 3. Gastos Asociados
-    // Fórmula: 0.50 USD/pieza + 1.50 USD/Kg
-    // Nota: Si fabrico 0.1 piezas (500g), ¿el gasto por pieza es 0.50 o 0.05?
-    // Asumiremos prorrateo lineal para "pieza" también, o cobramos el setup completo?
-    // Para ser justos en costos variables, lo prorratearemos.
     const overheadPerPiece = GLOBAL_CONFIG.gasto_energia_pieza + (GLOBAL_CONFIG.gasto_mano_obra_kg * unitWeight);
     const totalOverheadCost = overheadPerPiece * equivalentPieces;
 
@@ -160,7 +171,18 @@ function calculate() {
     const totalProductionCost = totalIngredientsCost + totalOverheadCost;
 
     // 5. Ventas y Ganancias
-    const totalSalesPriceUSD = GLOBAL_CONFIG.precio_venta_sugerido * totalWeight;
+    // Fórmula: Precio Venta = Costo Total / (1 - Margen%)
+    const marginPercent = parseFloat(document.getElementById('profit-margin').value) || 0;
+    const marginDecimal = marginPercent / 100;
+
+    // Evitar división por cero o márgenes imposibles (>= 100%)
+    let totalSalesPriceUSD = 0;
+    if (marginDecimal < 1) {
+        totalSalesPriceUSD = totalProductionCost / (1 - marginDecimal);
+    } else {
+        totalSalesPriceUSD = 0; // Error safety
+    }
+
     const totalProfitUSD = totalSalesPriceUSD - totalProductionCost;
     const totalSalesPriceBs = totalSalesPriceUSD * exchangeRate;
 
@@ -191,7 +213,7 @@ function formatCurrency(amount, currency = 'USD') {
     }
 }
 
-// --- Modal Logic ---
+// --- Modal Logic: Precios ---
 
 function openPriceModal() {
     pricesListEl.innerHTML = '';
@@ -209,11 +231,7 @@ function openPriceModal() {
         pricesListEl.appendChild(row);
     }
 
-    modal.classList.remove('hidden');
-}
-
-function closePriceModal() {
-    modal.classList.add('hidden');
+    priceModal.classList.remove('hidden');
 }
 
 function savePrices() {
@@ -226,12 +244,56 @@ function savePrices() {
         }
     });
 
-    // Guardar en LocalStorage
     localStorage.setItem('COSTOS_DB', JSON.stringify(COSTOS_DB));
-
-    closePriceModal();
-    calculate(); // Recalcular con nuevos precios
+    priceModal.classList.add('hidden');
+    calculate();
     alert('Precios actualizados correctamente.');
+}
+
+// --- Modal Logic: Recetas ---
+
+function openRecipeModal() {
+    const selectedJamonId = jamonSelect.value;
+    recipeModalTitle.textContent = selectedJamonId;
+    recipeListEl.innerHTML = '';
+
+    const ingredientes = RECETAS_DB.filter(item => item.id_jamon === selectedJamonId);
+
+    ingredientes.forEach((item, index) => {
+        const row = document.createElement('div');
+        row.className = 'price-row';
+        row.innerHTML = `
+            <label>${item.ingrediente} (${item.unidad})</label>
+            <div class="input-wrapper">
+                <input type="number" class="recipe-input" data-ingrediente="${item.ingrediente}" value="${item.cantidad}" step="0.001">
+            </div>
+        `;
+        recipeListEl.appendChild(row);
+    });
+
+    recipeModal.classList.remove('hidden');
+}
+
+function saveRecipe() {
+    const selectedJamonId = jamonSelect.value;
+    const inputs = document.querySelectorAll('.recipe-input');
+
+    // Actualizar el array local
+    inputs.forEach(input => {
+        const ingredienteName = input.dataset.ingrediente;
+        const newVal = parseFloat(input.value);
+
+        // Buscar y actualizar en la DB
+        const itemIndex = RECETAS_DB.findIndex(r => r.id_jamon === selectedJamonId && r.ingrediente === ingredienteName);
+        if (itemIndex !== -1 && !isNaN(newVal)) {
+            RECETAS_DB[itemIndex].cantidad = newVal;
+        }
+    });
+
+    localStorage.setItem('RECETAS_DB', JSON.stringify(RECETAS_DB));
+    recipeModal.classList.add('hidden');
+    calculate();
+    alert(`Receta de ${selectedJamonId} actualizada.`);
 }
 
 // Cálculo inicial

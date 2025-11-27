@@ -1,7 +1,7 @@
 {
-  "name": "Calculadora Jamón Curado",
-  "short_name": "Jamón Calc",
-  "description": "Calculadora de costos y rentabilidad para producción de jamón curado artesanal",
+  "name": "Calculadora de Charcutería",
+  "short_name": "Charcutería Calc",
+  "description": "Calculadora de costos y rentabilidad para producción de charcutería artesanal",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#8b3a3a",
@@ -21,7 +21,11 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["business", "food", "productivity"],
+  "categories": [
+    "business",
+    "food",
+    "productivity"
+  ],
   "lang": "es",
   "dir": "ltr"
 }

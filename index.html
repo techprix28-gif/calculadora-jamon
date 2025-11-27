@@ -4,10 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Costos - Jamón Curado</title>
+    <title>Calculadora de Charcutería</title>
 
     <!-- PWA Meta Tags -->
-    <meta name="description" content="Calculadora de costos y rentabilidad para producción de jamón curado artesanal">
     <meta name="theme-color" content="#c84c4c">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -29,18 +28,38 @@
 <body>
     <div class="container">
         <header>
-            <h1>Calculadora de Jamón Curado</h1>
+            <h1>Calculadora de Charcutería</h1>
             <p>Estimación de costos y rentabilidad</p>
         </header>
 
         <main class="card">
             <section class="controls">
                 <div class="control-group">
-                    <label for="jamon-type">Tipo de Jamón</label>
+                    <label for="jamon-type">Tipo de Producto</label>
                     <div class="select-wrapper">
                         <select id="jamon-type">
-                            <option value="JAMON-A">JAMON-A (Curado Largo)</option>
-                            <option value="JAMON-B">JAMON-B (Curado Rápido)</option>
+                            <!-- Productos Ahumados -->
+                            <optgroup label="🍖 Productos Ahumados">
+                                <option value="JAMON-A">Jamón Selva Negra</option>
+                                <option value="TOCINETA">Tocineta Ahumada</option>
+                                <option value="LOMO-AHUMADO">Lomo Ahumado</option>
+                                <option value="CHULETA-AHUMADA">Chuleta Ahumada</option>
+                                <option value="COSTILLA-AHUMADA">Costilla Ahumada</option>
+                            </optgroup>
+
+                            <!-- Productos Curados -->
+                            <optgroup label="🥓 Productos Curados">
+                                <option value="COPPA">Coppa</option>
+                                <option value="PITINAS">Pitinas</option>
+                                <option value="JAMON-NEGRO">Jamón Negro</option>
+                                <option value="CHORIZO-CURADO">Chorizo Curado</option>
+                            </optgroup>
+
+                            <!-- Productos Frescos -->
+                            <optgroup label="🐷 Productos Frescos">
+                                <option value="CHORIZO-COLONIERO">Chorizo Coloniero</option>
+                                <option value="RODILLA-CERDO">Rodilla de Cerdo</option>
+                            </optgroup>
                         </select>
                     </div>
                 </div>
@@ -105,6 +124,9 @@
                     <button id="btn-config-recipes" class="btn-secondary">
                         <span>📝</span> Recetas
                     </button>
+                    <button id="btn-config-overhead" class="btn-secondary">
+                        <span>💰</span> Gastos
+                    </button>
                 </div>
             </section>
 
@@ -119,7 +141,7 @@
                     <div class="result-item">
                         <span class="label">Gastos Asociados</span>
                         <span class="value" id="cost-overhead">$0.00</span>
-                        <span class="subtext">Energía + Mano de Obra</span>
+                        <span class="subtext">Energía + Mano de Obra + Generales</span>
                     </div>
                     <div class="result-item highlight">
                         <span class="label">Costo Total Producción</span>
@@ -144,6 +166,40 @@
                         <span class="stat-value" id="price-bs">Bs 0.00</span>
                     </div>
                 </div>
+
+                <div class="divider"></div>
+
+                <h2>Precios por Porción</h2>
+                <div class="portion-prices">
+                    <div class="portion-row">
+                        <span class="portion-label">Precio por 100g</span>
+                        <div class="portion-values">
+                            <span class="portion-value" id="price-per-100g-usd">$0.00</span>
+                            <span class="portion-value bs" id="price-per-100g-bs">Bs 0.00</span>
+                        </div>
+                    </div>
+                    <div class="portion-row">
+                        <span class="portion-label">Precio por 250g</span>
+                        <div class="portion-values">
+                            <span class="portion-value" id="price-per-250g-usd">$0.00</span>
+                            <span class="portion-value bs" id="price-per-250g-bs">Bs 0.00</span>
+                        </div>
+                    </div>
+                    <div class="portion-row">
+                        <span class="portion-label">Precio por 500g</span>
+                        <div class="portion-values">
+                            <span class="portion-value" id="price-per-500g-usd">$0.00</span>
+                            <span class="portion-value bs" id="price-per-500g-bs">Bs 0.00</span>
+                        </div>
+                    </div>
+                    <div class="portion-row highlight">
+                        <span class="portion-label">Precio por Kg</span>
+                        <div class="portion-values">
+                            <span class="portion-value" id="price-per-kg-usd">$0.00</span>
+                            <span class="portion-value bs" id="price-per-kg-bs">Bs 0.00</span>
+                        </div>
+                    </div>
+                </div>
             </section>
         </main>
     </div>
@@ -155,6 +211,14 @@
                 <h3>Actualizar Precios (USD)</h3>
                 <button id="close-modal" class="close-btn">&times;</button>
             </div>
+
+            <!-- Buscador -->
+            <div class="modal-search">
+                <div class="input-wrapper">
+                    <input type="text" id="price-search" placeholder="🔍 Buscar ingrediente...">
+                </div>
+            </div>
+
             <div class="modal-body" id="prices-list">
                 <!-- Prices will be injected here by JS -->
             </div>
@@ -176,6 +240,49 @@
             </div>
             <div class="modal-footer">
                 <button id="save-recipe" class="btn-primary">Guardar Receta</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Gastos Asociados -->
+    <div id="overhead-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Configurar Gastos Asociados</h3>
+                <button id="close-overhead-modal" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body" id="overhead-list">
+                <div class="price-row">
+                    <label>Gasto de Energía (USD por pieza)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="overhead-energy" value="0.50" step="0.01">
+                        <span class="currency-label">$</span>
+                    </div>
+                </div>
+                <div class="price-row">
+                    <label>Mano de Obra (USD por kg)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="overhead-labor" value="1.50" step="0.01">
+                        <span class="currency-label">$</span>
+                    </div>
+                </div>
+                <div class="price-row">
+                    <label>Gastos Generales (%)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="overhead-general" value="10" step="1">
+                        <span class="currency-label">%</span>
+                    </div>
+                </div>
+                <div class="price-row">
+                    <label>Otros Gastos (USD fijos)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="overhead-other" value="0.00" step="0.01">
+                        <span class="currency-label">$</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="save-overhead" class="btn-primary">Guardar Gastos</button>
             </div>
         </div>
     </div>

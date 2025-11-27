@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Costos - Jamón Curado</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Calculadora de Jamón Curado</h1>
+            <p>Estimación de costos y rentabilidad</p>
+        </header>
+
+        <main class="card">
+            <section class="controls">
+                <div class="control-group">
+                    <label for="jamon-type">Tipo de Jamón</label>
+                    <div class="select-wrapper">
+                        <select id="jamon-type">
+                            <option value="JAMON-A">JAMON-A (Curado Largo)</option>
+                            <option value="JAMON-B">JAMON-B (Curado Rápido)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Unidad de Medida</label>
+                    <div class="toggle-container">
+                        <input type="radio" name="unit-type" id="unit-pieces" value="pieces" checked>
+                        <label for="unit-pieces" class="toggle-btn">Piezas</label>
+
+                        <input type="radio" name="unit-type" id="unit-grams" value="grams">
+                        <label for="unit-grams" class="toggle-btn">Gramos</label>
+                    </div>
+                </div>
+
+                <div class="control-group" id="group-pieces">
+                    <label for="quantity-pieces">Cantidad (Piezas)</label>
+                    <div class="select-wrapper">
+                        <select id="quantity-pieces">
+                            <option value="0.5">1/2 Pieza</option>
+                            <option value="1" selected>1 Pieza</option>
+                            <option value="5">5 Piezas</option>
+                            <option value="10">10 Piezas</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="control-group hidden" id="group-grams">
+                    <label for="quantity-grams">Cantidad (Gramos)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="quantity-grams" min="100" max="1000" step="50" value="500">
+                        <span class="currency-label">g</span>
+                    </div>
+                    <div class="range-wrapper">
+                        <input type="range" id="range-grams" min="100" max="1000" step="50" value="500">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="exchange-rate">Tasa de Cambio (Bs/USD)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="exchange-rate" value="40.00" step="0.01">
+                        <span class="currency-label">Bs</span>
+                    </div>
+                </div>
+
+                <button id="btn-config-prices" class="btn-secondary">⚙️ Actualizar Precios Ingredientes</button>
+            </section>
+
+            <div class="divider"></div>
+
+            <section class="results">
+                <h2>Resultados de Producción</h2>
+
+                <div class="result-grid">
+                    <div class="result-item">
+                        <span class="label">Costo Ingredientes</span>
+                        <span class="value" id="cost-ingredients">$0.00</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="label">Gastos Asociados</span>
+                        <span class="value" id="cost-overhead">$0.00</span>
+                        <span class="subtext">Energía + Mano de Obra</span>
+                    </div>
+                    <div class="result-item highlight">
+                        <span class="label">Costo Total Producción</span>
+                        <span class="value" id="cost-total">$0.00</span>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <h2>Rentabilidad Estimada</h2>
+                <div class="profit-stats">
+                    <div class="stat-box">
+                        <span class="stat-label">Precio Venta (USD)</span>
+                        <span class="stat-value" id="price-usd">$0.00</span>
+                    </div>
+                    <div class="stat-box profit">
+                        <span class="stat-label">Ganancia (USD)</span>
+                        <span class="stat-value" id="profit-usd">$0.00</span>
+                    </div>
+                    <div class="stat-box local">
+                        <span class="stat-label">Precio Venta (Bs)</span>
+                        <span class="stat-value" id="price-bs">Bs 0.00</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <div id="price-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Actualizar Precios (USD)</h3>
+                <button id="close-modal" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body" id="prices-list">
+                <!-- Prices will be injected here by JS -->
+            </div>
+            <div class="modal-footer">
+                <button id="save-prices" class="btn-primary">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>

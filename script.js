@@ -2,7 +2,7 @@
 // DETECCIÓN DE VERSIÓN Y LIMPIEZA DE CACHE
 // ============================================
 
-const APP_VERSION = '2.2.0';
+const APP_VERSION = '2.3.0';
 const VERSION_KEY = 'app_version';
 
 // Verificar si es nueva versión
@@ -761,11 +761,11 @@ function saveOverhead() {
 }
 
 // ============================================
-// FUNCIONALIDAD PARA COMPARTIR POR WHATSAPP
+// FUNCIONALIDAD PARA COMPARTIR CON OPCIONES
 // ============================================
 
-// Función principal para compartir
-function compartirPorWhatsApp() {
+// NUEVA FUNCIÓN - Mostrar modal con opciones de compartir
+function mostrarOpcionesCompartir() {
     const selectedProductId = jamonSelect.value;
 
     if (!selectedProductId) {
@@ -773,24 +773,54 @@ function compartirPorWhatsApp() {
         return;
     }
 
-    const productSelect = document.getElementById('jamon-type');
-    const selectedOption = productSelect.options[productSelect.selectedIndex];
-    const productName = selectedOption.text;
+    // Crear modal de opciones
+    const modalHTML = `
+        <div class="modal" id="share-modal">
+            <div class="modal-content" style="max-width: 350px;">
+                <div class="modal-header">
+                    <h3>📤 Compartir Resultados</h3>
+                    <button class="close-btn" onclick="cerrarModalCompartir()">&times;</button>
+                </div>
+                <div class="share-options" style="padding: 20px;">
+                    <button class="share-option-btn whatsapp" onclick="compartirWhatsAppCompleto()" style="width: 100%; padding: 12px; margin-bottom: 10px; background: #25D366; color: white; border: none; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                        <span style="font-size: 1.2rem;">💬</span>
+                        WhatsApp Completo
+                    </button>
+                    <button class="share-option-btn whatsapp" onclick="compartirWhatsAppResumen()" style="width: 100%; padding: 12px; margin-bottom: 10px; background: #128C7E; color: white; border: none; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                        <span style="font-size: 1.2rem;">📊</span>
+                        WhatsApp Resumen
+                    </button>
+                    <button class="share-option-btn" onclick="compartirSoloReceta()" style="width: 100%; padding: 12px; background: #805AD5; color: white; border: none; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                        <span style="font-size: 1.2rem;">📝</span>
+                        Solo Receta
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
 
-    // Obtener todos los datos actuales
-    const datos = obtenerDatosParaCompartir(productName);
+    // Agregar modal al body
+    const modalDiv = document.createElement('div');
+    modalDiv.innerHTML = modalHTML;
+    document.body.appendChild(modalDiv);
 
-    // Formatear mensaje para WhatsApp
-    const mensaje = formatearMensajeWhatsApp(datos);
-
-    // Crear URL de WhatsApp
-    const urlWhatsApp = `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
-
-    // Abrir en nueva ventana
-    window.open(urlWhatsApp, '_blank');
+    // Mostrar modal
+    setTimeout(() => {
+        document.getElementById('share-modal').classList.remove('hidden');
+    }, 10);
 }
 
-// Obtener todos los datos actuales
+function cerrarModalCompartir() {
+    const modal = document.getElementById('share-modal');
+    if (modal) {
+        modal.classList.add('hidden');
+        setTimeout(() => {
+            modal.remove();
+        }, 300);
+    }
+}
+
+// Función para obtener datos para compartir
 function obtenerDatosParaCompartir(productName) {
     const exchangeRate = parseFloat(exchangeInput.value) || 247.0;
     const marginPercent = parseFloat(document.getElementById('profit-margin').value) || 30;
@@ -859,8 +889,12 @@ function obtenerRecetaActual(productName, grams) {
     return recetaEscalada;
 }
 
-// Formatear mensaje para WhatsApp
-function formatearMensajeWhatsApp(datos) {
+// Función para compartir COMPLETO (con toda la receta)
+function compartirWhatsAppCompleto() {
+    const datos = obtenerDatosParaCompartir(
+        document.getElementById('jamon-type').options[document.getElementById('jamon-type').selectedIndex].text
+    );
+
     let mensaje = `📋 *CALCULADORA DE CHARCUTERÍA*\n`;
     mensaje += `📅 ${datos.fecha} - ${datos.hora}\n\n`;
 
@@ -885,16 +919,12 @@ function formatearMensajeWhatsApp(datos) {
     mensaje += `• 500g: $${datos.precio500gUSD.toFixed(2)} | Bs ${datos.precio500gBS.toFixed(2)}\n`;
     mensaje += `• 1kg: $${datos.precio1kgUSD.toFixed(2)} | Bs ${datos.precio1kgBS.toFixed(2)}\n\n`;
 
-    // Solo agregar receta si existe
+    // RECETA COMPLETA - TODOS LOS INGREDIENTES
     if (datos.receta && datos.receta.length > 0) {
-        mensaje += `📝 *RECETA (para ${datos.cantidad}g producto)*\n`;
-        // Mostrar solo los primeros 8 ingredientes para no hacer el mensaje muy largo
-        datos.receta.slice(0, 8).forEach(item => {
+        mensaje += `📝 *RECETA COMPLETA (para ${datos.cantidad}g producto)*\n`;
+        datos.receta.forEach(item => {
             mensaje += `• ${item.ingrediente}: ${item.cantidad.toFixed(1)}${item.unidad}\n`;
         });
-        if (datos.receta.length > 8) {
-            mensaje += `• ... y ${datos.receta.length - 8} ingredientes más\n`;
-        }
         mensaje += `\n`;
     }
 
@@ -906,36 +936,67 @@ function formatearMensajeWhatsApp(datos) {
 
     mensaje += `📱 *Generado con: Calculadora de Charcutería PWA*`;
 
-    return mensaje;
+    const urlWhatsApp = `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
+    window.open(urlWhatsApp, '_blank');
+
+    // Cerrar modal
+    cerrarModalCompartir();
 }
 
-// Función alternativa: Generar mensaje más corto
-function compartirResumenCorto() {
+// Función para compartir SOLO RESUMEN (sin receta)
+function compartirWhatsAppResumen() {
+    const datos = obtenerDatosParaCompartir(
+        document.getElementById('jamon-type').options[document.getElementById('jamon-type').selectedIndex].text
+    );
+
+    let mensaje = `📊 *RESUMEN: ${datos.producto}*\n\n`;
+    mensaje += `• Cantidad: ${datos.cantidad}g (${(datos.cantidad / 1000).toFixed(2)} kg)\n`;
+    mensaje += `• Tasa de cambio: ${datos.tasaCambio} Bs/$\n`;
+    mensaje += `• Margen: ${datos.margen}%\n`;
+    mensaje += `• Costo total: $${datos.costoTotal.toFixed(2)}\n`;
+    mensaje += `• Precio venta: $${datos.precioVentaUSD.toFixed(2)} | Bs ${datos.precioVentaBS.toFixed(2)}\n`;
+    mensaje += `• Ganancia: $${datos.gananciaUSD.toFixed(2)}\n\n`;
+    mensaje += `• Precio por kg: $${datos.precio1kgUSD.toFixed(2)} | Bs ${datos.precio1kgBS.toFixed(2)}\n`;
+    mensaje += `• Precio por 100g: $${datos.precio100gUSD.toFixed(2)} | Bs ${datos.precio100gBS.toFixed(2)}\n\n`;
+    mensaje += `📱 Calculadora de Charcutería PWA`;
+
+    const urlWhatsApp = `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
+    window.open(urlWhatsApp, '_blank');
+
+    // Cerrar modal
+    cerrarModalCompartir();
+}
+
+// Función para compartir SOLO RECETA
+function compartirSoloReceta() {
     const selectedProductId = jamonSelect.value;
-
-    if (!selectedProductId) {
-        alert('⚠️ Seleccione un producto primero.');
-        return;
-    }
-
     const productSelect = document.getElementById('jamon-type');
     const selectedOption = productSelect.options[productSelect.selectedIndex];
     const productName = selectedOption.text;
 
-    const exchangeRate = parseFloat(exchangeInput.value) || 247.0;
     const desiredGrams = parseFloat(quantityGramsInput.value) || 1000;
-    const precioKgUSD = parseFloat(document.getElementById('price-per-kg-usd').textContent.replace('$', '') || 0);
-    const precioKgBS = parseFloat(document.getElementById('price-per-kg-bs').textContent.replace('Bs ', '').replace(',', '') || 0);
+    const receta = obtenerRecetaActual(productName, desiredGrams);
 
-    let mensaje = `📊 *RESUMEN: ${productName}*\n\n`;
-    mensaje += `• Cantidad: ${desiredGrams}g\n`;
-    mensaje += `• Tasa: ${exchangeRate} Bs/$\n`;
-    mensaje += `• Precio kg: $${precioKgUSD.toFixed(2)} | Bs ${precioKgBS.toFixed(2)}\n`;
-    mensaje += `• Precio 100g: $${(precioKgUSD / 10).toFixed(2)} | Bs ${(precioKgBS / 10).toFixed(2)}\n\n`;
-    mensaje += `📱 Calculadora Charcutería`;
+    if (!receta || receta.length === 0) {
+        alert('⚠️ Este producto no tiene receta configurada.');
+        return;
+    }
+
+    let mensaje = `📝 *RECETA: ${productName}*\n`;
+    mensaje += `*Para: ${desiredGrams}g de producto final*\n\n`;
+
+    receta.forEach(item => {
+        mensaje += `• ${item.ingrediente}: ${item.cantidad.toFixed(1)}${item.unidad}\n`;
+    });
+
+    mensaje += `\n📅 ${new Date().toLocaleDateString('es-VE')}`;
+    mensaje += `\n📱 Generado con: Calculadora de Charcutería PWA`;
 
     const urlWhatsApp = `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
     window.open(urlWhatsApp, '_blank');
+
+    // Cerrar modal
+    cerrarModalCompartir();
 }
 
 // ============================================
@@ -987,6 +1048,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Configurar botón compartir si existe
     const btnCompartir = document.getElementById('btn-compartir');
     if (btnCompartir) {
-        btnCompartir.addEventListener('click', compartirPorWhatsApp);
+        btnCompartir.addEventListener('click', mostrarOpcionesCompartir);
     }
 });

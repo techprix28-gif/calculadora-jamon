@@ -101,11 +101,11 @@
                 <div class="control-group">
                     <label for="quantity-grams">Cantidad (Gramos)</label>
                     <div class="input-wrapper">
-                        <input type="number" id="quantity-grams" value="1000" step="100" min="100" max="10000">
+                        <input type="number" id="quantity-grams" value="1000" step="100" min="100" max="5000">
                         <span class="currency-label">g</span>
                     </div>
                     <div class="range-wrapper">
-                        <input type="range" id="range-grams" min="100" max="10000" step="100" value="1000">
+                        <input type="range" id="range-grams" min="100" max="5000" step="100" value="1000">
                     </div>
                     <div class="quantity-info">
                         <span id="quantity-display">1.0 kg</span>
@@ -130,6 +130,7 @@
                     </div>
                 </div>
 
+                <!-- En la sección .button-group, cambiar el botón compartir: -->
                 <div class="button-group">
                     <button id="btn-config-prices" class="btn-secondary">
                         <span>⚙️</span> Precios
@@ -140,8 +141,8 @@
                     <button id="btn-config-overhead" class="btn-secondary">
                         <span>💰</span> Gastos
                     </button>
-                    <!-- NUEVO BOTÓN PARA COMPARTIR -->
-                    <button id="btn-compartir" class="btn-secondary">
+                    <!-- BOTÓN COMPARTIR CON OPCIONES -->
+                    <button id="btn-compartir" class="btn-secondary" onclick="mostrarOpcionesCompartir()">
                         <span>📤</span> Compartir
                     </button>
                 </div>

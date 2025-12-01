@@ -19,10 +19,41 @@
     <link rel="apple-touch-icon" href="icon-512.png">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2.2">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Estilo adicional para botón compartir -->
+    <style>
+        #btn-compartir {
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+            color: white;
+            border: none;
+        }
+
+        #btn-compartir:hover {
+            background: linear-gradient(135deg, #128C7E 0%, #075E54 100%);
+        }
+
+        #btn-compartir:active {
+            transform: scale(0.98);
+        }
+
+        /* Estilo para select con placeholder */
+        select option[value=""][disabled] {
+            color: var(--text-light);
+            font-style: italic;
+        }
+
+        /* Estilo para botón deshabilitado */
+        .btn-secondary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed !important;
+            background-color: #e2e8f0;
+            border-color: #cbd5e0;
+        }
+    </style>
 </head>
 
 <body>
@@ -108,6 +139,10 @@
                     </button>
                     <button id="btn-config-overhead" class="btn-secondary">
                         <span>💰</span> Gastos
+                    </button>
+                    <!-- NUEVO BOTÓN PARA COMPARTIR -->
+                    <button id="btn-compartir" class="btn-secondary">
+                        <span>📤</span> Compartir
                     </button>
                 </div>
             </section>
@@ -269,13 +304,13 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="script.js?v=2.2"></script>
 
     <!-- PWA Service Worker Registration -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
+                navigator.serviceWorker.register('./sw.js?v=2')
                     .then((registration) => {
                         console.log('✅ Service Worker registrado:', registration.scope);
                     })
@@ -283,6 +318,13 @@
                         console.log('❌ Error al registrar Service Worker:', error);
                     });
             });
+        }
+
+        // Función para forzar recarga sin cache
+        function hardReload() {
+            if (confirm('¿Recargar sin cache? Esto forzará la última versión.')) {
+                location.reload(true);
+            }
         }
     </script>
 </body>

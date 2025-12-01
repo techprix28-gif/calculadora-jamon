@@ -1,12 +1,12 @@
 // Service Worker para PWA - Calculadora Jamón Curado
-// VERSIÓN ACTUALIZADA PARA FORZAR CACHE
+// VERSIÓN 2 - Para forzar actualización
 
-const CACHE_VERSION = 'jamon-calc-v2'; // ⬅️ CAMBIAR VERSIÓN
+const CACHE_VERSION = 'jamon-calc-v2';
 const urlsToCache = [
     './',
-    './index.html',
-    './style.css',
-    './script.js',
+    './index.html?v=2.2',
+    './style.css?v=2.2',
+    './script.js?v=2.2',
     './manifest.json',
     './icon-192.png',
     './icon-512.png'
@@ -28,7 +28,7 @@ self.addEventListener('install', (event) => {
     );
 });
 
-// Activación - ELIMINAR CACHES ANTIGUOS
+// Activación del Service Worker
 self.addEventListener('activate', (event) => {
     console.log('🚀 Activando Service Worker v2');
     event.waitUntil(
@@ -49,7 +49,7 @@ self.addEventListener('activate', (event) => {
     );
 });
 
-// Estrategia: Network First (para desarrollo)
+// Estrategia: Network First para desarrollo
 self.addEventListener('fetch', (event) => {
     // Para archivos .html, .js, .css usar Network First
     if (event.request.url.includes('.html') ||

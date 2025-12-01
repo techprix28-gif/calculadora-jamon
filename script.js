@@ -2,7 +2,7 @@
 // DETECCIÓN DE VERSIÓN Y LIMPIEZA DE CACHE
 // ============================================
 
-const APP_VERSION = '2.1.0';
+const APP_VERSION = '2.2.0';
 const VERSION_KEY = 'app_version';
 
 // Verificar si es nueva versión
@@ -183,7 +183,7 @@ let COSTOS_DB = JSON.parse(localStorage.getItem('COSTOS_DB')) || {
     'Sal Gruesa': 1.3,
     'Sal de cura': 10.0,
     'Sal Marina': 1.5,
-    'Nitrito': 25.0, // NUEVO: Precio para Nitrito
+    'Nitrito': 25.0,
 
     // Endulzantes
     'Azúcar': 2.0,
@@ -198,8 +198,8 @@ let COSTOS_DB = JSON.parse(localStorage.getItem('COSTOS_DB')) || {
     'Glutamato': 10.0,
 
     // Líquidos
-    'Agua': 0.0, // NUEVO: Agua tiene costo 0
-    'Hielo': 0.0, // NUEVO: Hielo tiene costo 0
+    'Agua': 0.0,
+    'Hielo': 0.0,
     'Vino tinto': 7.0,
     'Cerveza': 1.0,
     'Malta': 5.0,
@@ -761,6 +761,184 @@ function saveOverhead() {
 }
 
 // ============================================
+// FUNCIONALIDAD PARA COMPARTIR POR WHATSAPP
+// ============================================
+
+// Función principal para compartir
+function compartirPorWhatsApp() {
+    const selectedProductId = jamonSelect.value;
+
+    if (!selectedProductId) {
+        alert('⚠️ Seleccione un producto primero.');
+        return;
+    }
+
+    const productSelect = document.getElementById('jamon-type');
+    const selectedOption = productSelect.options[productSelect.selectedIndex];
+    const productName = selectedOption.text;
+
+    // Obtener todos los datos actuales
+    const datos = obtenerDatosParaCompartir(productName);
+
+    // Formatear mensaje para WhatsApp
+    const mensaje = formatearMensajeWhatsApp(datos);
+
+    // Crear URL de WhatsApp
+    const urlWhatsApp = `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
+
+    // Abrir en nueva ventana
+    window.open(urlWhatsApp, '_blank');
+}
+
+// Obtener todos los datos actuales
+function obtenerDatosParaCompartir(productName) {
+    const exchangeRate = parseFloat(exchangeInput.value) || 247.0;
+    const marginPercent = parseFloat(document.getElementById('profit-margin').value) || 30;
+    const desiredGrams = parseFloat(quantityGramsInput.value) || 1000;
+
+    // Obtener valores actuales de la interfaz
+    const datos = {
+        producto: productName,
+        cantidad: desiredGrams,
+        tasaCambio: exchangeRate,
+        margen: marginPercent,
+        fecha: new Date().toLocaleDateString('es-VE'),
+        hora: new Date().toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit' }),
+
+        // Costos
+        costoIngredientes: parseFloat(costIngredientsEl.textContent.replace('$', '') || 0),
+        costoGastos: parseFloat(costOverheadEl.textContent.replace('$', '') || 0),
+        costoTotal: parseFloat(costTotalEl.textContent.replace('$', '') || 0),
+
+        // Precios
+        precioVentaUSD: parseFloat(priceUsdEl.textContent.replace('$', '') || 0),
+        gananciaUSD: parseFloat(profitUsdEl.textContent.replace('$', '') || 0),
+        precioVentaBS: parseFloat(priceBsEl.textContent.replace('Bs ', '').replace(',', '') || 0),
+
+        // Precios por porción
+        precio100gUSD: parseFloat(document.getElementById('price-per-100g-usd').textContent.replace('$', '') || 0),
+        precio250gUSD: parseFloat(document.getElementById('price-per-250g-usd').textContent.replace('$', '') || 0),
+        precio500gUSD: parseFloat(document.getElementById('price-per-500g-usd').textContent.replace('$', '') || 0),
+        precio1kgUSD: parseFloat(document.getElementById('price-per-kg-usd').textContent.replace('$', '') || 0),
+
+        precio100gBS: parseFloat(document.getElementById('price-per-100g-bs').textContent.replace('Bs ', '').replace(',', '') || 0),
+        precio250gBS: parseFloat(document.getElementById('price-per-250g-bs').textContent.replace('Bs ', '').replace(',', '') || 0),
+        precio500gBS: parseFloat(document.getElementById('price-per-500g-bs').textContent.replace('Bs ', '').replace(',', '') || 0),
+        precio1kgBS: parseFloat(document.getElementById('price-per-kg-bs').textContent.replace('Bs ', '').replace(',', '') || 0),
+
+        // Gastos configurados
+        gastos: { ...OVERHEAD_CONFIG },
+
+        // Receta (si existe)
+        receta: obtenerRecetaActual(productName, desiredGrams)
+    };
+
+    return datos;
+}
+
+// Obtener receta escalada actual
+function obtenerRecetaActual(productName, grams) {
+    const selectedProductId = jamonSelect.value;
+    const ingredientes = RECETAS_DB.filter(item => item.id_jamon === selectedProductId);
+
+    if (ingredientes.length === 0) return null;
+
+    const scaleFactor = grams / 1000;
+    const recetaEscalada = [];
+
+    ingredientes.forEach(item => {
+        const cantidadEscalada = item.cantidad * scaleFactor;
+        recetaEscalada.push({
+            ingrediente: item.ingrediente,
+            cantidad: cantidadEscalada,
+            unidad: item.unidad,
+            precioUnitario: COSTOS_DB[item.ingrediente] || 0
+        });
+    });
+
+    return recetaEscalada;
+}
+
+// Formatear mensaje para WhatsApp
+function formatearMensajeWhatsApp(datos) {
+    let mensaje = `📋 *CALCULADORA DE CHARCUTERÍA*\n`;
+    mensaje += `📅 ${datos.fecha} - ${datos.hora}\n\n`;
+
+    mensaje += `🔸 *PRODUCTO:* ${datos.producto}\n`;
+    mensaje += `🔸 *CANTIDAD:* ${datos.cantidad}g (${(datos.cantidad / 1000).toFixed(2)} kg)\n`;
+    mensaje += `🔸 *TASA DE CAMBIO:* ${datos.tasaCambio} Bs/$\n`;
+    mensaje += `🔸 *MARGEN DE GANANCIA:* ${datos.margen}%\n\n`;
+
+    mensaje += `💵 *COSTOS DE PRODUCCIÓN*\n`;
+    mensaje += `• Ingredientes: $${datos.costoIngredientes.toFixed(2)}\n`;
+    mensaje += `• Gastos: $${datos.costoGastos.toFixed(2)}\n`;
+    mensaje += `• *TOTAL COSTO: $${datos.costoTotal.toFixed(2)}*\n\n`;
+
+    mensaje += `💰 *RENTABILIDAD*\n`;
+    mensaje += `• Precio Venta USD: $${datos.precioVentaUSD.toFixed(2)}\n`;
+    mensaje += `• Precio Venta Bs: Bs ${datos.precioVentaBS.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}\n`;
+    mensaje += `• *GANANCIA USD: $${datos.gananciaUSD.toFixed(2)}*\n\n`;
+
+    mensaje += `📊 *PRECIOS POR PORCIÓN*\n`;
+    mensaje += `• 100g: $${datos.precio100gUSD.toFixed(2)} | Bs ${datos.precio100gBS.toFixed(2)}\n`;
+    mensaje += `• 250g: $${datos.precio250gUSD.toFixed(2)} | Bs ${datos.precio250gBS.toFixed(2)}\n`;
+    mensaje += `• 500g: $${datos.precio500gUSD.toFixed(2)} | Bs ${datos.precio500gBS.toFixed(2)}\n`;
+    mensaje += `• 1kg: $${datos.precio1kgUSD.toFixed(2)} | Bs ${datos.precio1kgBS.toFixed(2)}\n\n`;
+
+    // Solo agregar receta si existe
+    if (datos.receta && datos.receta.length > 0) {
+        mensaje += `📝 *RECETA (para ${datos.cantidad}g producto)*\n`;
+        // Mostrar solo los primeros 8 ingredientes para no hacer el mensaje muy largo
+        datos.receta.slice(0, 8).forEach(item => {
+            mensaje += `• ${item.ingrediente}: ${item.cantidad.toFixed(1)}${item.unidad}\n`;
+        });
+        if (datos.receta.length > 8) {
+            mensaje += `• ... y ${datos.receta.length - 8} ingredientes más\n`;
+        }
+        mensaje += `\n`;
+    }
+
+    mensaje += `⚙️ *GASTOS CONFIGURADOS*\n`;
+    mensaje += `• Energía: $${datos.gastos.gasto_energia_100g} por 100g\n`;
+    mensaje += `• Mano obra: $${datos.gastos.gasto_mano_obra_kg} por kg\n`;
+    mensaje += `• Gastos generales: ${datos.gastos.gasto_general_porcentaje}%\n`;
+    mensaje += `• Gastos fijos: $${datos.gastos.gasto_otros_fijos}\n\n`;
+
+    mensaje += `📱 *Generado con: Calculadora de Charcutería PWA*`;
+
+    return mensaje;
+}
+
+// Función alternativa: Generar mensaje más corto
+function compartirResumenCorto() {
+    const selectedProductId = jamonSelect.value;
+
+    if (!selectedProductId) {
+        alert('⚠️ Seleccione un producto primero.');
+        return;
+    }
+
+    const productSelect = document.getElementById('jamon-type');
+    const selectedOption = productSelect.options[productSelect.selectedIndex];
+    const productName = selectedOption.text;
+
+    const exchangeRate = parseFloat(exchangeInput.value) || 247.0;
+    const desiredGrams = parseFloat(quantityGramsInput.value) || 1000;
+    const precioKgUSD = parseFloat(document.getElementById('price-per-kg-usd').textContent.replace('$', '') || 0);
+    const precioKgBS = parseFloat(document.getElementById('price-per-kg-bs').textContent.replace('Bs ', '').replace(',', '') || 0);
+
+    let mensaje = `📊 *RESUMEN: ${productName}*\n\n`;
+    mensaje += `• Cantidad: ${desiredGrams}g\n`;
+    mensaje += `• Tasa: ${exchangeRate} Bs/$\n`;
+    mensaje += `• Precio kg: $${precioKgUSD.toFixed(2)} | Bs ${precioKgBS.toFixed(2)}\n`;
+    mensaje += `• Precio 100g: $${(precioKgUSD / 10).toFixed(2)} | Bs ${(precioKgBS / 10).toFixed(2)}\n\n`;
+    mensaje += `📱 Calculadora Charcutería`;
+
+    const urlWhatsApp = `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
+    window.open(urlWhatsApp, '_blank');
+}
+
+// ============================================
 // EVENT LISTENERS
 // ============================================
 
@@ -805,4 +983,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Establecer tasa de cambio predeterminada
     exchangeInput.value = '247.00';
+
+    // Configurar botón compartir si existe
+    const btnCompartir = document.getElementById('btn-compartir');
+    if (btnCompartir) {
+        btnCompartir.addEventListener('click', compartirPorWhatsApp);
+    }
 });

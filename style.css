@@ -629,3 +629,60 @@ select option[value=""][disabled] {
     font-size: 0.9rem;
     margin-bottom: 10px;
 }
+
+/* Agregar al final del archivo CSS */
+
+/* Estilo para botón compartir */
+#btn-compartir {
+    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+    color: white;
+    border: none;
+}
+
+#btn-compartir:hover {
+    background: linear-gradient(135deg, #128C7E 0%, #075E54 100%);
+}
+
+#btn-compartir:active {
+    transform: scale(0.98);
+}
+
+/* Modal para opciones de compartir (opcional) */
+.share-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px;
+}
+
+.share-option-btn {
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: #f1f5f9;
+    color: var(--text);
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s;
+}
+
+.share-option-btn:hover {
+    background: #e2e8f0;
+}
+
+.share-option-btn.whatsapp {
+    background: #25D366;
+    color: white;
+}
+
+.share-option-btn.copy {
+    background: #3b82f6;
+    color: white;
+}
+
+.share-icon {
+    font-size: 1.2rem;
+}

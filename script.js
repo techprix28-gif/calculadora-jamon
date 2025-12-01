@@ -2,6 +2,38 @@
 // BASE DE DATOS DE RECETAS (ACTUALIZADA)
 // ============================================
 
+// ============================================
+// DETECCIÓN DE VERSIÓN Y LIMPIEZA DE CACHE
+// ============================================
+
+const APP_VERSION = '2.0.0';
+const VERSION_KEY = 'app_version';
+
+// Verificar si es nueva versión
+const currentVersion = localStorage.getItem(VERSION_KEY);
+if (currentVersion !== APP_VERSION) {
+    console.log('🆕 Nueva versión detectada:', APP_VERSION);
+
+    // Limpiar todo el localStorage
+    localStorage.clear();
+
+    // Guardar nueva versión
+    localStorage.setItem(VERSION_KEY, APP_VERSION);
+
+    // Forzar recarga si es PWA
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function (registrations) {
+            for (let registration of registrations) {
+                registration.unregister();
+            }
+            // Recargar página
+            setTimeout(() => {
+                window.location.reload(true);
+            }, 1000);
+        });
+    }
+}
+
 // A. RECETAS POR 1000g DE PRODUCTO FINAL
 let RECETAS_DB = JSON.parse(localStorage.getItem('RECETAS_DB')) || [
     // RECETA COPPA (COMPLETA)

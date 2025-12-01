@@ -1,70 +1,84 @@
 // Service Worker para PWA - Calculadora Jamón Curado
-const CACHE_NAME = 'jamon-calc-v1';
+// VERSIÓN ACTUALIZADA PARA FORZAR CACHE
+
+const CACHE_VERSION = 'jamon-calc-v2'; // ⬅️ CAMBIAR VERSIÓN
 const urlsToCache = [
     './',
     './index.html',
     './style.css',
     './script.js',
+    './manifest.json',
     './icon-192.png',
     './icon-512.png'
 ];
 
 // Instalación del Service Worker
 self.addEventListener('install', (event) => {
+    console.log('🔄 Instalando Service Worker v2');
     event.waitUntil(
-        caches.open(CACHE_NAME)
+        caches.open(CACHE_VERSION)
             .then((cache) => {
-                console.log('Cache abierto');
+                console.log('✅ Cache abierto v2');
                 return cache.addAll(urlsToCache);
+            })
+            .then(() => {
+                // Forzar activación inmediata
+                return self.skipWaiting();
             })
     );
 });
 
-// Activación del Service Worker
+// Activación - ELIMINAR CACHES ANTIGUOS
 self.addEventListener('activate', (event) => {
+    console.log('🚀 Activando Service Worker v2');
     event.waitUntil(
         caches.keys().then((cacheNames) => {
             return Promise.all(
                 cacheNames.map((cacheName) => {
-                    if (cacheName !== CACHE_NAME) {
-                        console.log('Eliminando cache antiguo:', cacheName);
+                    // ELIMINAR TODAS LAS VERSIONES ANTERIORES
+                    if (cacheName !== CACHE_VERSION) {
+                        console.log('🗑️ Eliminando cache antiguo:', cacheName);
                         return caches.delete(cacheName);
                     }
                 })
             );
+        }).then(() => {
+            // Tomar control de todos los clients
+            return self.clients.claim();
         })
     );
 });
 
-// Estrategia: Cache First, fallback to Network
+// Estrategia: Network First (para desarrollo)
 self.addEventListener('fetch', (event) => {
-    event.respondWith(
-        caches.match(event.request)
-            .then((response) => {
-                // Cache hit - devolver respuesta del cache
-                if (response) {
-                    return response;
-                }
+    // Para archivos .html, .js, .css usar Network First
+    if (event.request.url.includes('.html') ||
+        event.request.url.includes('.js') ||
+        event.request.url.includes('.css')) {
 
-                // Clone la petición
-                const fetchRequest = event.request.clone();
-
-                return fetch(fetchRequest).then((response) => {
-                    // Verificar si es una respuesta válida
-                    if (!response || response.status !== 200 || response.type !== 'basic') {
-                        return response;
-                    }
-
-                    // Clone la respuesta
-                    const responseToCache = response.clone();
-
-                    caches.open(CACHE_NAME)
+        event.respondWith(
+            fetch(event.request)
+                .then((response) => {
+                    // Si la red funciona, guardar en cache
+                    const responseClone = response.clone();
+                    caches.open(CACHE_VERSION)
                         .then((cache) => {
-                            cache.put(event.request, responseToCache);
+                            cache.put(event.request, responseClone);
                         });
-
                     return response;
-                });
-            })
-    );
+                })
+                .catch(() => {
+                    // Si falla la red, usar cache
+                    return caches.match(event.request);
+                })
+        );
+    } else {
+        // Para otros recursos, Cache First
+        event.respondWith(
+            caches.match(event.request)
+                .then((response) => {
+                    return response || fetch(event.request);
+                })
+        );
+    }
 });

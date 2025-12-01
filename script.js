@@ -1,12 +1,8 @@
 // ============================================
-// BASE DE DATOS DE RECETAS (ACTUALIZADA)
-// ============================================
-
-// ============================================
 // DETECCIÓN DE VERSIÓN Y LIMPIEZA DE CACHE
 // ============================================
 
-const APP_VERSION = '2.0.0';
+const APP_VERSION = '2.1.0';
 const VERSION_KEY = 'app_version';
 
 // Verificar si es nueva versión
@@ -34,9 +30,13 @@ if (currentVersion !== APP_VERSION) {
     }
 }
 
+// ============================================
+// BASE DE DATOS DE RECETAS (ACTUALIZADA)
+// ============================================
+
 // A. RECETAS POR 1000g DE PRODUCTO FINAL
 let RECETAS_DB = JSON.parse(localStorage.getItem('RECETAS_DB')) || [
-    // RECETA COPPA (COMPLETA)
+    // ========== RECETA COPPA ==========
     { id_jamon: 'COPPA', ingrediente: 'Carne de cerdo', unidad: 'g', cantidad: 1833 },
     { id_jamon: 'COPPA', ingrediente: 'Sal', unidad: 'g', cantidad: 38.5 },
     { id_jamon: 'COPPA', ingrediente: 'Sal de cura', unidad: 'g', cantidad: 5.5 },
@@ -46,7 +46,7 @@ let RECETAS_DB = JSON.parse(localStorage.getItem('RECETAS_DB')) || [
     { id_jamon: 'COPPA', ingrediente: 'Pimienta blanca', unidad: 'g', cantidad: 1 },
     { id_jamon: 'COPPA', ingrediente: 'Nuez moscada', unidad: 'g', cantidad: 6 },
 
-    // RECETA PITINA (COMPLETA)
+    // ========== RECETA PITINA ==========
     { id_jamon: 'PITINA', ingrediente: 'Carne de cerdo', unidad: 'g', cantidad: 1283 },
     { id_jamon: 'PITINA', ingrediente: 'Carne de res', unidad: 'g', cantidad: 367 },
     { id_jamon: 'PITINA', ingrediente: 'Tocino', unidad: 'g', cantidad: 183 },
@@ -61,10 +61,109 @@ let RECETAS_DB = JSON.parse(localStorage.getItem('RECETAS_DB')) || [
     { id_jamon: 'PITINA', ingrediente: 'Pimienta blanca', unidad: 'g', cantidad: 1.5 },
     { id_jamon: 'PITINA', ingrediente: 'Ajo molido', unidad: 'g', cantidad: 8 },
     { id_jamon: 'PITINA', ingrediente: 'Harina de maíz', unidad: 'g', cantidad: 183 },
-    { id_jamon: 'PITINA', ingrediente: 'Nuez moscada', unidad: 'g', cantidad: 5 }
+    { id_jamon: 'PITINA', ingrediente: 'Nuez moscada', unidad: 'g', cantidad: 5 },
+
+    // ========== RECETA PARA PRODUCTOS AHUMADOS (MISMA PARA 5 PRODUCTOS) ==========
+    // Jamón Selva Negra (JAMON-A), Costilla Ahumada (COSTILLA-AHUMADA),
+    // Chuleta Ahumada (CHULETA-AHUMADA), Tocineta (TOCINETA), Lomo Ahumado (LOMO-AHUMADO)
+
+    // Jamón Selva Negra
+    { id_jamon: 'JAMON-A', ingrediente: 'Carne de cerdo', unidad: 'g', cantidad: 2050 },
+    { id_jamon: 'JAMON-A', ingrediente: 'Agua', unidad: 'ml', cantidad: 1710 },
+    { id_jamon: 'JAMON-A', ingrediente: 'Hielo', unidad: 'g', cantidad: 828 },
+    { id_jamon: 'JAMON-A', ingrediente: 'Sal', unidad: 'g', cantidad: 105 },
+    { id_jamon: 'JAMON-A', ingrediente: 'Sal de cura', unidad: 'g', cantidad: 9 },
+    { id_jamon: 'JAMON-A', ingrediente: 'Azúcar', unidad: 'g', cantidad: 30 },
+    { id_jamon: 'JAMON-A', ingrediente: 'Nitrito', unidad: 'g', cantidad: 18 },
+    { id_jamon: 'JAMON-A', ingrediente: 'Fosfato', unidad: 'g', cantidad: 9 },
+    { id_jamon: 'JAMON-A', ingrediente: 'Glutamato', unidad: 'g', cantidad: 9 },
+    { id_jamon: 'JAMON-A', ingrediente: 'Pimienta guayabita', unidad: 'g', cantidad: 23 },
+    { id_jamon: 'JAMON-A', ingrediente: 'Orégano', unidad: 'g', cantidad: 12 },
+    { id_jamon: 'JAMON-A', ingrediente: 'Romero', unidad: 'g', cantidad: 3 },
+    { id_jamon: 'JAMON-A', ingrediente: 'Nuez moscada', unidad: 'g', cantidad: 1.2 },
+    { id_jamon: 'JAMON-A', ingrediente: 'Ajo', unidad: 'g', cantidad: 23 },
+    { id_jamon: 'JAMON-A', ingrediente: 'Laurel', unidad: 'g', cantidad: 14 },
+    { id_jamon: 'JAMON-A', ingrediente: 'Pimienta negra', unidad: 'g', cantidad: 10 },
+    { id_jamon: 'JAMON-A', ingrediente: 'Tomillo', unidad: 'g', cantidad: 10 },
+
+    // Costilla Ahumada (MISMA RECETA)
+    { id_jamon: 'COSTILLA-AHUMADA', ingrediente: 'Carne de cerdo', unidad: 'g', cantidad: 2050 },
+    { id_jamon: 'COSTILLA-AHUMADA', ingrediente: 'Agua', unidad: 'ml', cantidad: 1710 },
+    { id_jamon: 'COSTILLA-AHUMADA', ingrediente: 'Hielo', unidad: 'g', cantidad: 828 },
+    { id_jamon: 'COSTILLA-AHUMADA', ingrediente: 'Sal', unidad: 'g', cantidad: 105 },
+    { id_jamon: 'COSTILLA-AHUMADA', ingrediente: 'Sal de cura', unidad: 'g', cantidad: 9 },
+    { id_jamon: 'COSTILLA-AHUMADA', ingrediente: 'Azúcar', unidad: 'g', cantidad: 30 },
+    { id_jamon: 'COSTILLA-AHUMADA', ingrediente: 'Nitrito', unidad: 'g', cantidad: 18 },
+    { id_jamon: 'COSTILLA-AHUMADA', ingrediente: 'Fosfato', unidad: 'g', cantidad: 9 },
+    { id_jamon: 'COSTILLA-AHUMADA', ingrediente: 'Glutamato', unidad: 'g', cantidad: 9 },
+    { id_jamon: 'COSTILLA-AHUMADA', ingrediente: 'Pimienta guayabita', unidad: 'g', cantidad: 23 },
+    { id_jamon: 'COSTILLA-AHUMADA', ingrediente: 'Orégano', unidad: 'g', cantidad: 12 },
+    { id_jamon: 'COSTILLA-AHUMADA', ingrediente: 'Romero', unidad: 'g', cantidad: 3 },
+    { id_jamon: 'COSTILLA-AHUMADA', ingrediente: 'Nuez moscada', unidad: 'g', cantidad: 1.2 },
+    { id_jamon: 'COSTILLA-AHUMADA', ingrediente: 'Ajo', unidad: 'g', cantidad: 23 },
+    { id_jamon: 'COSTILLA-AHUMADA', ingrediente: 'Laurel', unidad: 'g', cantidad: 14 },
+    { id_jamon: 'COSTILLA-AHUMADA', ingrediente: 'Pimienta negra', unidad: 'g', cantidad: 10 },
+    { id_jamon: 'COSTILLA-AHUMADA', ingrediente: 'Tomillo', unidad: 'g', cantidad: 10 },
+
+    // Chuleta Ahumada (MISMA RECETA)
+    { id_jamon: 'CHULETA-AHUMADA', ingrediente: 'Carne de cerdo', unidad: 'g', cantidad: 2050 },
+    { id_jamon: 'CHULETA-AHUMADA', ingrediente: 'Agua', unidad: 'ml', cantidad: 1710 },
+    { id_jamon: 'CHULETA-AHUMADA', ingrediente: 'Hielo', unidad: 'g', cantidad: 828 },
+    { id_jamon: 'CHULETA-AHUMADA', ingrediente: 'Sal', unidad: 'g', cantidad: 105 },
+    { id_jamon: 'CHULETA-AHUMADA', ingrediente: 'Sal de cura', unidad: 'g', cantidad: 9 },
+    { id_jamon: 'CHULETA-AHUMADA', ingrediente: 'Azúcar', unidad: 'g', cantidad: 30 },
+    { id_jamon: 'CHULETA-AHUMADA', ingrediente: 'Nitrito', unidad: 'g', cantidad: 18 },
+    { id_jamon: 'CHULETA-AHUMADA', ingrediente: 'Fosfato', unidad: 'g', cantidad: 9 },
+    { id_jamon: 'CHULETA-AHUMADA', ingrediente: 'Glutamato', unidad: 'g', cantidad: 9 },
+    { id_jamon: 'CHULETA-AHUMADA', ingrediente: 'Pimienta guayabita', unidad: 'g', cantidad: 23 },
+    { id_jamon: 'CHULETA-AHUMADA', ingrediente: 'Orégano', unidad: 'g', cantidad: 12 },
+    { id_jamon: 'CHULETA-AHUMADA', ingrediente: 'Romero', unidad: 'g', cantidad: 3 },
+    { id_jamon: 'CHULETA-AHUMADA', ingrediente: 'Nuez moscada', unidad: 'g', cantidad: 1.2 },
+    { id_jamon: 'CHULETA-AHUMADA', ingrediente: 'Ajo', unidad: 'g', cantidad: 23 },
+    { id_jamon: 'CHULETA-AHUMADA', ingrediente: 'Laurel', unidad: 'g', cantidad: 14 },
+    { id_jamon: 'CHULETA-AHUMADA', ingrediente: 'Pimienta negra', unidad: 'g', cantidad: 10 },
+    { id_jamon: 'CHULETA-AHUMADA', ingrediente: 'Tomillo', unidad: 'g', cantidad: 10 },
+
+    // Tocineta (MISMA RECETA)
+    { id_jamon: 'TOCINETA', ingrediente: 'Carne de cerdo', unidad: 'g', cantidad: 2050 },
+    { id_jamon: 'TOCINETA', ingrediente: 'Agua', unidad: 'ml', cantidad: 1710 },
+    { id_jamon: 'TOCINETA', ingrediente: 'Hielo', unidad: 'g', cantidad: 828 },
+    { id_jamon: 'TOCINETA', ingrediente: 'Sal', unidad: 'g', cantidad: 105 },
+    { id_jamon: 'TOCINETA', ingrediente: 'Sal de cura', unidad: 'g', cantidad: 9 },
+    { id_jamon: 'TOCINETA', ingrediente: 'Azúcar', unidad: 'g', cantidad: 30 },
+    { id_jamon: 'TOCINETA', ingrediente: 'Nitrito', unidad: 'g', cantidad: 18 },
+    { id_jamon: 'TOCINETA', ingrediente: 'Fosfato', unidad: 'g', cantidad: 9 },
+    { id_jamon: 'TOCINETA', ingrediente: 'Glutamato', unidad: 'g', cantidad: 9 },
+    { id_jamon: 'TOCINETA', ingrediente: 'Pimienta guayabita', unidad: 'g', cantidad: 23 },
+    { id_jamon: 'TOCINETA', ingrediente: 'Orégano', unidad: 'g', cantidad: 12 },
+    { id_jamon: 'TOCINETA', ingrediente: 'Romero', unidad: 'g', cantidad: 3 },
+    { id_jamon: 'TOCINETA', ingrediente: 'Nuez moscada', unidad: 'g', cantidad: 1.2 },
+    { id_jamon: 'TOCINETA', ingrediente: 'Ajo', unidad: 'g', cantidad: 23 },
+    { id_jamon: 'TOCINETA', ingrediente: 'Laurel', unidad: 'g', cantidad: 14 },
+    { id_jamon: 'TOCINETA', ingrediente: 'Pimienta negra', unidad: 'g', cantidad: 10 },
+    { id_jamon: 'TOCINETA', ingrediente: 'Tomillo', unidad: 'g', cantidad: 10 },
+
+    // Lomo Ahumado (MISMA RECETA)
+    { id_jamon: 'LOMO-AHUMADO', ingrediente: 'Carne de cerdo', unidad: 'g', cantidad: 2050 },
+    { id_jamon: 'LOMO-AHUMADO', ingrediente: 'Agua', unidad: 'ml', cantidad: 1710 },
+    { id_jamon: 'LOMO-AHUMADO', ingrediente: 'Hielo', unidad: 'g', cantidad: 828 },
+    { id_jamon: 'LOMO-AHUMADO', ingrediente: 'Sal', unidad: 'g', cantidad: 105 },
+    { id_jamon: 'LOMO-AHUMADO', ingrediente: 'Sal de cura', unidad: 'g', cantidad: 9 },
+    { id_jamon: 'LOMO-AHUMADO', ingrediente: 'Azúcar', unidad: 'g', cantidad: 30 },
+    { id_jamon: 'LOMO-AHUMADO', ingrediente: 'Nitrito', unidad: 'g', cantidad: 18 },
+    { id_jamon: 'LOMO-AHUMADO', ingrediente: 'Fosfato', unidad: 'g', cantidad: 9 },
+    { id_jamon: 'LOMO-AHUMADO', ingrediente: 'Glutamato', unidad: 'g', cantidad: 9 },
+    { id_jamon: 'LOMO-AHUMADO', ingrediente: 'Pimienta guayabita', unidad: 'g', cantidad: 23 },
+    { id_jamon: 'LOMO-AHUMADO', ingrediente: 'Orégano', unidad: 'g', cantidad: 12 },
+    { id_jamon: 'LOMO-AHUMADO', ingrediente: 'Romero', unidad: 'g', cantidad: 3 },
+    { id_jamon: 'LOMO-AHUMADO', ingrediente: 'Nuez moscada', unidad: 'g', cantidad: 1.2 },
+    { id_jamon: 'LOMO-AHUMADO', ingrediente: 'Ajo', unidad: 'g', cantidad: 23 },
+    { id_jamon: 'LOMO-AHUMADO', ingrediente: 'Laurel', unidad: 'g', cantidad: 14 },
+    { id_jamon: 'LOMO-AHUMADO', ingrediente: 'Pimienta negra', unidad: 'g', cantidad: 10 },
+    { id_jamon: 'LOMO-AHUMADO', ingrediente: 'Tomillo', unidad: 'g', cantidad: 10 }
 ];
 
-// B. TABLA DE COSTOS UNITARIOS (USD por Kg/L)
+// B. TABLA DE COSTOS UNITARIOS (USD por Kg/L) - ACTUALIZADA
 let COSTOS_DB = JSON.parse(localStorage.getItem('COSTOS_DB')) || {
     // Carnes y Base
     'Carne de cerdo': 3.5,
@@ -84,6 +183,7 @@ let COSTOS_DB = JSON.parse(localStorage.getItem('COSTOS_DB')) || {
     'Sal Gruesa': 1.3,
     'Sal de cura': 10.0,
     'Sal Marina': 1.5,
+    'Nitrito': 25.0, // NUEVO: Precio para Nitrito
 
     // Endulzantes
     'Azúcar': 2.0,
@@ -98,6 +198,8 @@ let COSTOS_DB = JSON.parse(localStorage.getItem('COSTOS_DB')) || {
     'Glutamato': 10.0,
 
     // Líquidos
+    'Agua': 0.0, // NUEVO: Agua tiene costo 0
+    'Hielo': 0.0, // NUEVO: Hielo tiene costo 0
     'Vino tinto': 7.0,
     'Cerveza': 1.0,
     'Malta': 5.0,

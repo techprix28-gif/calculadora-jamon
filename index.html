@@ -29,13 +29,13 @@
     <div class="container">
         <header>
             <h1>Calculadora de Charcutería</h1>
-            <p>Estimación de costos y rentabilidad</p>
+            <p>Estimación de costos y rentabilidad por gramos</p>
         </header>
 
         <main class="card">
             <section class="controls">
                 <div class="control-group">
-                    <label for="jamon-type">Tipo de Producto</label>
+                    <label for="jamon-type">Producto</label>
                     <div class="select-wrapper">
                         <select id="jamon-type">
                             <!-- Productos Ahumados -->
@@ -49,7 +49,7 @@
 
                             <!-- Productos Curados -->
                             <optgroup label="🥓 Productos Curados">
-                                <option value="COPPA">Coppa</option>
+                                <option value="COPPA" selected>Coppa</option>
                                 <option value="PITINAS">Pitinas</option>
                                 <option value="JAMON-NEGRO">Jamón Negro</option>
                                 <option value="CHORIZO-CURADO">Chorizo Curado</option>
@@ -65,37 +65,16 @@
                 </div>
 
                 <div class="control-group">
-                    <label>Unidad de Medida</label>
-                    <div class="toggle-container">
-                        <input type="radio" name="unit-type" id="unit-pieces" value="pieces" checked>
-                        <label for="unit-pieces" class="toggle-btn">Piezas</label>
-
-                        <input type="radio" name="unit-type" id="unit-grams" value="grams">
-                        <label for="unit-grams" class="toggle-btn">Gramos</label>
-                    </div>
-                </div>
-
-                <div class="control-group" id="group-pieces">
-                    <label for="quantity-pieces">Cantidad (Piezas)</label>
-                    <div class="select-wrapper">
-                        <select id="quantity-pieces">
-                            <option value="0.5">1/2 Pieza</option>
-                            <option value="1" selected>1 Pieza</option>
-                            <option value="2">2 Piezas</option>
-                            <option value="3">3 Piezas</option>
-                            <option value="5">5 Piezas</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="control-group hidden" id="group-grams">
-                    <label>Cantidad (Gramos)</label>
+                    <label for="quantity-grams">Cantidad (Gramos)</label>
                     <div class="input-wrapper">
-                        <input type="number" id="quantity-grams" value="1000" step="100">
+                        <input type="number" id="quantity-grams" value="1000" step="100" min="100" max="10000">
                         <span class="currency-label">g</span>
                     </div>
                     <div class="range-wrapper">
                         <input type="range" id="range-grams" min="100" max="10000" step="100" value="1000">
+                    </div>
+                    <div class="quantity-info">
+                        <span id="quantity-display">1.0 kg</span>
                     </div>
                 </div>
 
@@ -104,7 +83,7 @@
                 <div class="control-group">
                     <label for="exchange-rate">Tasa de Cambio (Bs/USD)</label>
                     <div class="input-wrapper">
-                        <input type="number" id="exchange-rate" value="40.00" step="0.10">
+                        <input type="number" id="exchange-rate" value="247.00" step="0.10" min="1">
                         <span class="currency-label">Bs</span>
                     </div>
                 </div>
@@ -112,7 +91,7 @@
                 <div class="control-group">
                     <label for="profit-margin">Margen de Ganancia (%)</label>
                     <div class="input-wrapper">
-                        <input type="number" id="profit-margin" value="30" step="1" max="99">
+                        <input type="number" id="profit-margin" value="30" step="1" min="0" max="99">
                         <span class="currency-label">%</span>
                     </div>
                 </div>
@@ -253,9 +232,9 @@
             </div>
             <div class="modal-body" id="overhead-list">
                 <div class="price-row">
-                    <label>Gasto de Energía (USD por pieza)</label>
+                    <label>Gasto de Energía (USD por 100g)</label>
                     <div class="input-wrapper">
-                        <input type="number" id="overhead-energy" value="0.50" step="0.01">
+                        <input type="number" id="overhead-energy" value="0.05" step="0.01">
                         <span class="currency-label">$</span>
                     </div>
                 </div>

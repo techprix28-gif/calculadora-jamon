@@ -1,5 +1,5 @@
 // ============================================
-// BASE DE DATOS DE RECETAS (ACTUALIZADA CON PITINA)
+// BASE DE DATOS DE RECETAS (ACTUALIZADA)
 // ============================================
 
 // A. RECETAS POR 1000g DE PRODUCTO FINAL
@@ -14,7 +14,7 @@ let RECETAS_DB = JSON.parse(localStorage.getItem('RECETAS_DB')) || [
     { id_jamon: 'COPPA', ingrediente: 'Pimienta blanca', unidad: 'g', cantidad: 1 },
     { id_jamon: 'COPPA', ingrediente: 'Nuez moscada', unidad: 'g', cantidad: 6 },
 
-    // RECETA PITINA (COMPLETA - NUEVA)
+    // RECETA PITINA (COMPLETA)
     { id_jamon: 'PITINA', ingrediente: 'Carne de cerdo', unidad: 'g', cantidad: 1283 },
     { id_jamon: 'PITINA', ingrediente: 'Carne de res', unidad: 'g', cantidad: 367 },
     { id_jamon: 'PITINA', ingrediente: 'Tocino', unidad: 'g', cantidad: 183 },
@@ -30,15 +30,13 @@ let RECETAS_DB = JSON.parse(localStorage.getItem('RECETAS_DB')) || [
     { id_jamon: 'PITINA', ingrediente: 'Ajo molido', unidad: 'g', cantidad: 8 },
     { id_jamon: 'PITINA', ingrediente: 'Harina de maíz', unidad: 'g', cantidad: 183 },
     { id_jamon: 'PITINA', ingrediente: 'Nuez moscada', unidad: 'g', cantidad: 5 }
-
-    // NOTA: Los otros productos no tienen receta (mensaje pendiente)
 ];
 
-// B. TABLA DE COSTOS UNITARIOS (USD por Kg) - ACTUALIZADA
+// B. TABLA DE COSTOS UNITARIOS (USD por Kg/L)
 let COSTOS_DB = JSON.parse(localStorage.getItem('COSTOS_DB')) || {
     // Carnes y Base
     'Carne de cerdo': 3.5,
-    'Carne de res': 4.0,      // NUEVO: Precio para carne de res
+    'Carne de res': 4.0,
     'Tocino': 3.5,
     'Pierna de Cerdo': 3.5,
     'Panceta de Cerdo': 3.5,
@@ -68,7 +66,7 @@ let COSTOS_DB = JSON.parse(localStorage.getItem('COSTOS_DB')) || {
     'Glutamato': 10.0,
 
     // Líquidos
-    'Vino tinto': 7.0,        // Precio por LITRO, convertiremos ml a L
+    'Vino tinto': 7.0,
     'Cerveza': 1.0,
     'Malta': 5.0,
     'Mostaza': 3.0,
@@ -107,7 +105,7 @@ let COSTOS_DB = JSON.parse(localStorage.getItem('COSTOS_DB')) || {
     'Whisky/Cognac': 40.0
 };
 
-// C. CONFIGURACIÓN DE GASTOS (sin cambios)
+// C. CONFIGURACIÓN DE GASTOS
 let OVERHEAD_CONFIG = JSON.parse(localStorage.getItem('OVERHEAD_CONFIG')) || {
     gasto_energia_100g: 0.05,
     gasto_mano_obra_kg: 1.50,
@@ -116,230 +114,9 @@ let OVERHEAD_CONFIG = JSON.parse(localStorage.getItem('OVERHEAD_CONFIG')) || {
 };
 
 // ============================================
-// FUNCIÓN PRINCIPAL DE CÁLCULO (ACTUALIZADA)
-// ============================================
-
-function calculate() {
-    const selectedProductId = jamonSelect.value;
-    const exchangeRate = parseFloat(exchangeInput.value) || 40.0;
-    const marginPercent = parseFloat(document.getElementById('profit-margin').value) || 30;
-
-    // Cantidad deseada en gramos
-    const desiredGrams = parseFloat(quantityGramsInput.value) || 1000;
-
-    // 1. Obtener receta del producto (si existe)
-    const ingredientes = RECETAS_DB.filter(item => item.id_jamon === selectedProductId);
-
-    // Verificar si el producto tiene receta
-    const hasRecipe = ingredientes.length > 0;
-
-    let totalIngredientsCost = 0;
-
-    if (hasRecipe) {
-        // 2. Calcular factor de escala
-        const scaleFactor = desiredGrams / 1000; // Receta base es para 1000g
-
-        // 3. Calcular costos de ingredientes escalados
-        ingredientes.forEach(item => {
-            const ingredienteName = item.ingrediente;
-            const cantidadBase = item.cantidad; // gramos para 1000g de producto final
-            const unidad = item.unidad; // 'g' o 'ml'
-            const cantidadEscalada = cantidadBase * scaleFactor; // gramos/ml para cantidad deseada
-
-            // Obtener precio por Kg o por Litro
-            const precioPorUnidad = COSTOS_DB[ingredienteName] || 0;
-
-            // Calcular costo según unidad
-            let costoIngrediente = 0;
-
-            if (unidad === 'g') {
-                // Convertir gramos a Kg para cálculo de costo
-                const cantidadKg = cantidadEscalada / 1000;
-                costoIngrediente = cantidadKg * precioPorUnidad;
-            } else if (unidad === 'ml') {
-                // Convertir ml a Litros para cálculo de costo
-                const cantidadL = cantidadEscalada / 1000;
-                costoIngrediente = cantidadL * precioPorUnidad;
-            } else {
-                // Para otras unidades (si las hubiera)
-                costoIngrediente = cantidadEscalada * (precioPorUnidad / 1000);
-            }
-
-            totalIngredientsCost += costoIngrediente;
-        });
-    }
-
-    // 4. Calcular gastos asociados
-    const gastosEnergia = (desiredGrams / 100) * OVERHEAD_CONFIG.gasto_energia_100g;
-    const gastosManoObra = (desiredGrams / 1000) * OVERHEAD_CONFIG.gasto_mano_obra_kg;
-    const gastosGenerales = totalIngredientsCost * (OVERHEAD_CONFIG.gasto_general_porcentaje / 100);
-
-    const totalOverheadCost = gastosEnergia + gastosManoObra + gastosGenerales + OVERHEAD_CONFIG.gasto_otros_fijos;
-
-    // 5. Calcular costos totales
-    const totalProductionCost = totalIngredientsCost + totalOverheadCost;
-
-    // 6. Calcular precio de venta con margen
-    let totalSalesPriceUSD = 0;
-    let totalProfitUSD = 0;
-
-    if (marginPercent < 100 && totalProductionCost > 0) {
-        const marginDecimal = marginPercent / 100;
-        totalSalesPriceUSD = totalProductionCost / (1 - marginDecimal);
-        totalProfitUSD = totalSalesPriceUSD - totalProductionCost;
-    }
-
-    // 7. Convertir a bolívares
-    const totalSalesPriceBs = totalSalesPriceUSD * exchangeRate;
-
-    // 8. Actualizar interfaz
-    updateUI(totalIngredientsCost, totalOverheadCost, totalProductionCost,
-        totalSalesPriceUSD, totalProfitUSD, totalSalesPriceBs,
-        desiredGrams, hasRecipe);
-}
-
-// ============================================
-// MODAL DE RECETAS (ACTUALIZADO PARA MOSTRAR UNIDADES)
-// ============================================
-
-function openRecipeModal() {
-    const selectedProductId = jamonSelect.value;
-    const productSelect = document.getElementById('jamon-type');
-    const selectedOption = productSelect.options[productSelect.selectedIndex];
-    recipeModalTitle.textContent = selectedOption.text;
-    recipeListEl.innerHTML = '';
-
-    const ingredientes = RECETAS_DB.filter(item => item.id_jamon === selectedProductId);
-
-    if (ingredientes.length === 0) {
-        // Mostrar mensaje "Pendiente por Receta"
-        recipeListEl.innerHTML = `
-            <div class="recipe-pending">
-                <p>📝 Receta pendiente para este producto</p>
-                <p style="font-size: 0.8rem; margin-bottom: 20px;">
-                    La receta se configura para 1000g de producto final.
-                </p>
-                <button class="btn-secondary" onclick="addNewRecipe()">
-                    <span>➕</span> Agregar Receta
-                </button>
-            </div>
-        `;
-    } else {
-        // OBTENER CANTIDAD ACTUAL SELECCIONADA
-        const currentGrams = parseFloat(quantityGramsInput.value) || 1000;
-        const scaleFactor = currentGrams / 1000;
-
-        // Mostrar receta existente CON VALORES ESCALADOS
-        ingredientes.forEach((item, index) => {
-            const cantidadBase = item.cantidad;
-            const unidad = item.unidad;
-            const cantidadEscalada = cantidadBase * scaleFactor;
-
-            // Formatear unidad para mostrar
-            let unidadDisplay = unidad;
-            if (unidad === 'ml') unidadDisplay = 'ml';
-            if (unidad === 'g') unidadDisplay = 'g';
-
-            const row = document.createElement('div');
-            row.className = 'price-row';
-            row.innerHTML = `
-                <label>${item.ingrediente} (${unidadDisplay})</label>
-                <div style="font-size: 0.75rem; color: var(--text-light); margin-bottom: 4px;">
-                    Base: ${cantidadBase}${unidadDisplay} para 1000g producto
-                </div>
-                <div class="input-wrapper">
-                    <input type="number" class="recipe-input" 
-                           data-ingrediente="${item.ingrediente}" 
-                           data-unidad="${unidad}"
-                           value="${cantidadEscalada.toFixed(1)}" 
-                           step="0.1" min="0">
-                    <span class="currency-label">${unidadDisplay}</span>
-                </div>
-                <div style="font-size: 0.7rem; color: var(--primary); margin-top: 4px;">
-                    Para ${currentGrams}g producto: <strong>${cantidadEscalada.toFixed(1)}${unidadDisplay}</strong>
-                </div>
-            `;
-            recipeListEl.appendChild(row);
-        });
-
-        // Información de cantidad actual
-        const infoRow = document.createElement('div');
-        infoRow.className = 'price-row';
-        infoRow.innerHTML = `
-            <div style="text-align: center; padding: 10px 0; font-size: 0.8rem; color: var(--text-light);">
-                <div>📊 Cantidad actual: <strong>${currentGrams}g</strong> de producto</div>
-                <div style="font-size: 0.7rem; margin-top: 4px;">
-                    Los valores se muestran escalados. Al guardar, se convertirán a valores base para 1000g.
-                </div>
-            </div>
-        `;
-        recipeListEl.appendChild(infoRow);
-
-        // Botón para agregar nuevo ingrediente
-        const addButtonRow = document.createElement('div');
-        addButtonRow.className = 'price-row';
-        addButtonRow.innerHTML = `
-            <button class="btn-secondary" onclick="addNewIngredient()" style="width: 100%;">
-                <span>➕</span> Agregar Ingrediente
-            </button>
-        `;
-        recipeListEl.appendChild(addButtonRow);
-    }
-
-    recipeModal.classList.remove('hidden');
-}
-
-// Función para guardar receta (conversión a valores base)
-function saveRecipe() {
-    const selectedProductId = jamonSelect.value;
-    const currentGrams = parseFloat(quantityGramsInput.value) || 1000;
-    const scaleFactor = currentGrams / 1000;
-
-    const inputs = document.querySelectorAll('.recipe-input');
-
-    inputs.forEach(input => {
-        const ingredienteName = input.dataset.ingrediente;
-        const unidad = input.dataset.unidad;
-        const valorEscalado = parseFloat(input.value); // Valor mostrado (escalado)
-
-        if (!isNaN(valorEscalado) && valorEscalado >= 0) {
-            // CONVERTIR de valor escalado a valor base (para 1000g)
-            const valorBase = valorEscalado / scaleFactor;
-
-            // Buscar y actualizar ingrediente existente
-            const itemIndex = RECETAS_DB.findIndex(r =>
-                r.id_jamon === selectedProductId &&
-                r.ingrediente === ingredienteName
-            );
-
-            if (itemIndex !== -1) {
-                RECETAS_DB[itemIndex].cantidad = valorBase;
-            } else {
-                // Si no existe, agregar nuevo ingrediente
-                RECETAS_DB.push({
-                    id_jamon: selectedProductId,
-                    ingrediente: ingredienteName,
-                    unidad: unidad,
-                    cantidad: valorBase
-                });
-            }
-        }
-    });
-
-    localStorage.setItem('RECETAS_DB', JSON.stringify(RECETAS_DB));
-    recipeModal.classList.add('hidden');
-    calculate();
-
-    const productSelect = document.getElementById('jamon-type');
-    const selectedOption = productSelect.options[productSelect.selectedIndex];
-    alert(`✅ Receta de ${selectedOption.text} actualizada.\nLos valores se guardaron para 1000g de producto.`);
-}
-
-// ============================================
-// RESTANTE DEL CÓDIGO (SIN CAMBIOS)
-// ============================================
-
 // ELEMENTOS DEL DOM
+// ============================================
+
 const jamonSelect = document.getElementById('jamon-type');
 const exchangeInput = document.getElementById('exchange-rate');
 const quantityGramsInput = document.getElementById('quantity-grams');
@@ -367,27 +144,10 @@ const pricesListEl = document.getElementById('prices-list');
 const recipeListEl = document.getElementById('recipe-list');
 const recipeModalTitle = document.getElementById('recipe-modal-title');
 
-// EVENT LISTENERS
-jamonSelect.addEventListener('change', calculate);
-quantityGramsInput.addEventListener('input', updateQuantityFromInput);
-quantityGramsRange.addEventListener('input', updateQuantityFromRange);
-exchangeInput.addEventListener('input', calculate);
-document.getElementById('profit-margin').addEventListener('input', calculate);
-btnConfigPrices.addEventListener('click', openPriceModal);
-btnClosePriceModal.addEventListener('click', () => priceModal.classList.add('hidden'));
-btnSavePrices.addEventListener('click', savePrices);
-btnConfigRecipes.addEventListener('click', openRecipeModal);
-btnCloseRecipeModal.addEventListener('click', () => recipeModal.classList.add('hidden'));
-btnConfigOverhead.addEventListener('click', openOverheadModal);
-btnCloseOverheadModal.addEventListener('click', () => overheadModal.classList.add('hidden'));
-btnSaveOverhead.addEventListener('click', saveOverhead);
-window.addEventListener('click', (e) => {
-    if (e.target === priceModal) priceModal.classList.add('hidden');
-    if (e.target === recipeModal) recipeModal.classList.add('hidden');
-    if (e.target === overheadModal) overheadModal.classList.add('hidden');
-});
+// ============================================
+// FUNCIONES PRINCIPALES - CÁLCULO
+// ============================================
 
-// FUNCIONES AUXILIARES
 function updateQuantityFromInput() {
     const grams = parseInt(quantityGramsInput.value) || 100;
     quantityGramsRange.value = grams;
@@ -410,6 +170,107 @@ function updateQuantityDisplay(grams) {
     }
 }
 
+// FUNCIÓN PRINCIPAL DE CÁLCULO
+function calculate() {
+    const selectedProductId = jamonSelect.value;
+
+    // VERIFICAR SI NO HAY PRODUCTO SELECCIONADO
+    if (!selectedProductId) {
+        // Mostrar todos los valores en $0.00
+        resetAllValues();
+
+        // Deshabilitar botón de recetas
+        toggleRecipeButton(false);
+
+        return; // Detener ejecución
+    }
+
+    // Si hay producto seleccionado, habilitar botón
+    toggleRecipeButton(true);
+
+    const exchangeRate = parseFloat(exchangeInput.value) || 247.0;
+    const marginPercent = parseFloat(document.getElementById('profit-margin').value) || 30;
+    const desiredGrams = parseFloat(quantityGramsInput.value) || 1000;
+
+    // 1. Obtener receta del producto
+    const ingredientes = RECETAS_DB.filter(item => item.id_jamon === selectedProductId);
+    const hasRecipe = ingredientes.length > 0;
+
+    let totalIngredientsCost = 0;
+
+    if (hasRecipe) {
+        // 2. Calcular factor de escala
+        const scaleFactor = desiredGrams / 1000;
+
+        // 3. Calcular costos de ingredientes escalados
+        ingredientes.forEach(item => {
+            const ingredienteName = item.ingrediente;
+            const cantidadBase = item.cantidad;
+            const unidad = item.unidad;
+            const cantidadEscalada = cantidadBase * scaleFactor;
+            const precioPorUnidad = COSTOS_DB[ingredienteName] || 0;
+
+            let costoIngrediente = 0;
+
+            if (unidad === 'g') {
+                const cantidadKg = cantidadEscalada / 1000;
+                costoIngrediente = cantidadKg * precioPorUnidad;
+            } else if (unidad === 'ml') {
+                const cantidadL = cantidadEscalada / 1000;
+                costoIngrediente = cantidadL * precioPorUnidad;
+            } else {
+                costoIngrediente = cantidadEscalada * (precioPorUnidad / 1000);
+            }
+
+            totalIngredientsCost += costoIngrediente;
+        });
+    }
+
+    // 4. Calcular gastos asociados
+    const gastosEnergia = (desiredGrams / 100) * OVERHEAD_CONFIG.gasto_energia_100g;
+    const gastosManoObra = (desiredGrams / 1000) * OVERHEAD_CONFIG.gasto_mano_obra_kg;
+    const gastosGenerales = totalIngredientsCost * (OVERHEAD_CONFIG.gasto_general_porcentaje / 100);
+    const totalOverheadCost = gastosEnergia + gastosManoObra + gastosGenerales + OVERHEAD_CONFIG.gasto_otros_fijos;
+
+    // 5. Costos totales
+    const totalProductionCost = totalIngredientsCost + totalOverheadCost;
+
+    // 6. Precio de venta con margen
+    let totalSalesPriceUSD = 0;
+    let totalProfitUSD = 0;
+
+    if (marginPercent < 100 && totalProductionCost > 0) {
+        const marginDecimal = marginPercent / 100;
+        totalSalesPriceUSD = totalProductionCost / (1 - marginDecimal);
+        totalProfitUSD = totalSalesPriceUSD - totalProductionCost;
+    }
+
+    // 7. Convertir a bolívares
+    const totalSalesPriceBs = totalSalesPriceUSD * exchangeRate;
+
+    // 8. Actualizar interfaz
+    updateUI(totalIngredientsCost, totalOverheadCost, totalProductionCost,
+        totalSalesPriceUSD, totalProfitUSD, totalSalesPriceBs,
+        desiredGrams, hasRecipe);
+}
+
+function resetAllValues() {
+    costIngredientsEl.textContent = '$0.00';
+    costOverheadEl.textContent = '$0.00';
+    costTotalEl.textContent = '$0.00';
+    priceUsdEl.textContent = '$0.00';
+    profitUsdEl.textContent = '$0.00';
+    priceBsEl.textContent = 'Bs 0.00';
+    resetPortionPrices();
+}
+
+function toggleRecipeButton(enabled) {
+    const recipeBtn = document.getElementById('btn-config-recipes');
+    recipeBtn.disabled = !enabled;
+    recipeBtn.style.opacity = enabled ? '1' : '0.5';
+    recipeBtn.style.cursor = enabled ? 'pointer' : 'not-allowed';
+}
+
 function updateUI(ingredients, overhead, total, salesUSD, profit, salesBs, grams, hasRecipe) {
     costIngredientsEl.textContent = formatCurrency(ingredients);
     costOverheadEl.textContent = formatCurrency(overhead);
@@ -426,7 +287,7 @@ function updateUI(ingredients, overhead, total, salesUSD, profit, salesBs, grams
 }
 
 function updatePortionPrices(totalSalesPriceUSD, totalGrams) {
-    const exchangeRate = parseFloat(exchangeInput.value) || 40.0;
+    const exchangeRate = parseFloat(exchangeInput.value) || 247.0;
     const pricePerGram = totalSalesPriceUSD / totalGrams;
 
     const portions = [
@@ -473,20 +334,28 @@ function formatCurrency(amount, currency = 'USD') {
     }
 }
 
+// ============================================
 // MODAL DE PRECIOS
+// ============================================
+
 function openPriceModal() {
     pricesListEl.innerHTML = '';
+
     const searchContainer = document.createElement('div');
     searchContainer.className = 'search-results';
     searchContainer.id = 'search-results';
     pricesListEl.appendChild(searchContainer);
+
     const ingredientsContainer = document.createElement('div');
     ingredientsContainer.id = 'ingredients-container';
     pricesListEl.appendChild(ingredientsContainer);
+
     renderIngredients(Object.entries(COSTOS_DB));
+
     const searchInput = document.getElementById('price-search');
     searchInput.value = '';
     searchInput.addEventListener('input', handleSearch);
+
     priceModal.classList.remove('hidden');
 }
 
@@ -549,27 +418,135 @@ function savePrices() {
     alert('✅ Precios actualizados correctamente.');
 }
 
-// MODAL GASTOS ASOCIADOS
-function openOverheadModal() {
-    document.getElementById('overhead-energy').value = OVERHEAD_CONFIG.gasto_energia_100g;
-    document.getElementById('overhead-labor').value = OVERHEAD_CONFIG.gasto_mano_obra_kg;
-    document.getElementById('overhead-general').value = OVERHEAD_CONFIG.gasto_general_porcentaje;
-    document.getElementById('overhead-other').value = OVERHEAD_CONFIG.gasto_otros_fijos;
-    overheadModal.classList.remove('hidden');
+// ============================================
+// MODAL DE RECETAS
+// ============================================
+
+function openRecipeModal() {
+    const selectedProductId = jamonSelect.value;
+
+    // Verificar si hay producto seleccionado
+    if (!selectedProductId) {
+        alert('⚠️ Por favor, seleccione un producto primero.');
+        return;
+    }
+
+    const productSelect = document.getElementById('jamon-type');
+    const selectedOption = productSelect.options[productSelect.selectedIndex];
+    recipeModalTitle.textContent = selectedOption.text;
+    recipeListEl.innerHTML = '';
+
+    const ingredientes = RECETAS_DB.filter(item => item.id_jamon === selectedProductId);
+
+    if (ingredientes.length === 0) {
+        recipeListEl.innerHTML = `
+            <div class="recipe-pending">
+                <p>📝 Receta pendiente para este producto</p>
+                <p style="font-size: 0.8rem; margin-bottom: 20px;">
+                    La receta se configura para 1000g de producto final.
+                </p>
+                <button class="btn-secondary" onclick="addNewRecipe()">
+                    <span>➕</span> Agregar Receta
+                </button>
+            </div>
+        `;
+    } else {
+        const currentGrams = parseFloat(quantityGramsInput.value) || 1000;
+        const scaleFactor = currentGrams / 1000;
+
+        ingredientes.forEach((item) => {
+            const cantidadBase = item.cantidad;
+            const unidad = item.unidad;
+            const cantidadEscalada = cantidadBase * scaleFactor;
+            const unidadDisplay = unidad === 'ml' ? 'ml' : 'g';
+
+            const row = document.createElement('div');
+            row.className = 'price-row';
+            row.innerHTML = `
+                <label>${item.ingrediente} (${unidadDisplay})</label>
+                <div style="font-size: 0.75rem; color: var(--text-light); margin-bottom: 4px;">
+                    Base: ${cantidadBase}${unidadDisplay} para 1000g producto
+                </div>
+                <div class="input-wrapper">
+                    <input type="number" class="recipe-input" 
+                           data-ingrediente="${item.ingrediente}" 
+                           data-unidad="${unidad}"
+                           value="${cantidadEscalada.toFixed(1)}" 
+                           step="0.1" min="0">
+                    <span class="currency-label">${unidadDisplay}</span>
+                </div>
+                <div style="font-size: 0.7rem; color: var(--primary); margin-top: 4px;">
+                    Para ${currentGrams}g producto: <strong>${cantidadEscalada.toFixed(1)}${unidadDisplay}</strong>
+                </div>
+            `;
+            recipeListEl.appendChild(row);
+        });
+
+        const infoRow = document.createElement('div');
+        infoRow.className = 'price-row';
+        infoRow.innerHTML = `
+            <div style="text-align: center; padding: 10px 0; font-size: 0.8rem; color: var(--text-light);">
+                <div>📊 Cantidad actual: <strong>${currentGrams}g</strong> de producto</div>
+                <div style="font-size: 0.7rem; margin-top: 4px;">
+                    Los valores se muestran escalados. Al guardar, se convertirán a valores base para 1000g.
+                </div>
+            </div>
+        `;
+        recipeListEl.appendChild(infoRow);
+
+        const addButtonRow = document.createElement('div');
+        addButtonRow.className = 'price-row';
+        addButtonRow.innerHTML = `
+            <button class="btn-secondary" onclick="addNewIngredient()" style="width: 100%;">
+                <span>➕</span> Agregar Ingrediente
+            </button>
+        `;
+        recipeListEl.appendChild(addButtonRow);
+    }
+
+    recipeModal.classList.remove('hidden');
 }
 
-function saveOverhead() {
-    OVERHEAD_CONFIG.gasto_energia_100g = parseFloat(document.getElementById('overhead-energy').value) || 0;
-    OVERHEAD_CONFIG.gasto_mano_obra_kg = parseFloat(document.getElementById('overhead-labor').value) || 0;
-    OVERHEAD_CONFIG.gasto_general_porcentaje = parseFloat(document.getElementById('overhead-general').value) || 0;
-    OVERHEAD_CONFIG.gasto_otros_fijos = parseFloat(document.getElementById('overhead-other').value) || 0;
-    localStorage.setItem('OVERHEAD_CONFIG', JSON.stringify(OVERHEAD_CONFIG));
-    overheadModal.classList.add('hidden');
+function saveRecipe() {
+    const selectedProductId = jamonSelect.value;
+    const currentGrams = parseFloat(quantityGramsInput.value) || 1000;
+    const scaleFactor = currentGrams / 1000;
+
+    const inputs = document.querySelectorAll('.recipe-input');
+
+    inputs.forEach(input => {
+        const ingredienteName = input.dataset.ingrediente;
+        const unidad = input.dataset.unidad;
+        const valorEscalado = parseFloat(input.value);
+
+        if (!isNaN(valorEscalado) && valorEscalado >= 0) {
+            const valorBase = valorEscalado / scaleFactor;
+
+            const itemIndex = RECETAS_DB.findIndex(r =>
+                r.id_jamon === selectedProductId &&
+                r.ingrediente === ingredienteName
+            );
+
+            if (itemIndex !== -1) {
+                RECETAS_DB[itemIndex].cantidad = valorBase;
+            } else {
+                RECETAS_DB.push({
+                    id_jamon: selectedProductId,
+                    ingrediente: ingredienteName,
+                    unidad: unidad,
+                    cantidad: valorBase
+                });
+            }
+        }
+    });
+
+    localStorage.setItem('RECETAS_DB', JSON.stringify(RECETAS_DB));
+    recipeModal.classList.add('hidden');
     calculate();
-    alert('✅ Gastos asociados actualizados.');
+
+    alert('✅ Receta actualizada correctamente.\nLos valores se guardaron para 1000g de producto.');
 }
 
-// FUNCIONES PARA AGREGAR RECETAS
 function addNewRecipe() {
     const selectedProductId = jamonSelect.value;
     const productSelect = document.getElementById('jamon-type');
@@ -626,8 +603,72 @@ function addNewIngredient() {
     }, 100);
 }
 
+// ============================================
+// MODAL DE GASTOS ASOCIADOS
+// ============================================
+
+function openOverheadModal() {
+    document.getElementById('overhead-energy').value = OVERHEAD_CONFIG.gasto_energia_100g;
+    document.getElementById('overhead-labor').value = OVERHEAD_CONFIG.gasto_mano_obra_kg;
+    document.getElementById('overhead-general').value = OVERHEAD_CONFIG.gasto_general_porcentaje;
+    document.getElementById('overhead-other').value = OVERHEAD_CONFIG.gasto_otros_fijos;
+    overheadModal.classList.remove('hidden');
+}
+
+function saveOverhead() {
+    OVERHEAD_CONFIG.gasto_energia_100g = parseFloat(document.getElementById('overhead-energy').value) || 0;
+    OVERHEAD_CONFIG.gasto_mano_obra_kg = parseFloat(document.getElementById('overhead-labor').value) || 0;
+    OVERHEAD_CONFIG.gasto_general_porcentaje = parseFloat(document.getElementById('overhead-general').value) || 0;
+    OVERHEAD_CONFIG.gasto_otros_fijos = parseFloat(document.getElementById('overhead-other').value) || 0;
+    localStorage.setItem('OVERHEAD_CONFIG', JSON.stringify(OVERHEAD_CONFIG));
+    overheadModal.classList.add('hidden');
+    calculate();
+    alert('✅ Gastos asociados actualizados.');
+}
+
+// ============================================
+// EVENT LISTENERS
+// ============================================
+
+// Eventos para cálculo
+jamonSelect.addEventListener('change', calculate);
+quantityGramsInput.addEventListener('input', updateQuantityFromInput);
+quantityGramsRange.addEventListener('input', updateQuantityFromRange);
+exchangeInput.addEventListener('input', calculate);
+document.getElementById('profit-margin').addEventListener('input', calculate);
+
+// Eventos modales
+btnConfigPrices.addEventListener('click', openPriceModal);
+btnClosePriceModal.addEventListener('click', () => priceModal.classList.add('hidden'));
+btnSavePrices.addEventListener('click', savePrices);
+
+btnConfigRecipes.addEventListener('click', openRecipeModal);
+btnCloseRecipeModal.addEventListener('click', () => recipeModal.classList.add('hidden'));
+
+btnConfigOverhead.addEventListener('click', openOverheadModal);
+btnCloseOverheadModal.addEventListener('click', () => overheadModal.classList.add('hidden'));
+btnSaveOverhead.addEventListener('click', saveOverhead);
+
+// Cerrar modales al hacer click fuera
+window.addEventListener('click', (e) => {
+    if (e.target === priceModal) priceModal.classList.add('hidden');
+    if (e.target === recipeModal) recipeModal.classList.add('hidden');
+    if (e.target === overheadModal) overheadModal.classList.add('hidden');
+});
+
+// ============================================
 // INICIALIZACIÓN
+// ============================================
+
 document.addEventListener('DOMContentLoaded', () => {
     updateQuantityDisplay(1000);
-    calculate();
+
+    // Inicializar con valores en $0.00
+    resetAllValues();
+
+    // Deshabilitar botón de recetas inicialmente
+    toggleRecipeButton(false);
+
+    // Establecer tasa de cambio predeterminada
+    exchangeInput.value = '247.00';
 });

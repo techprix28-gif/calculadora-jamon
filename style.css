@@ -595,3 +595,37 @@ input[type="range"]::-webkit-slider-thumb {
         font-size: 0.85rem;
     }
 }
+
+/* Agregar al final del archivo style.css */
+
+/* Estilo para select con placeholder */
+select option[value=""][disabled] {
+    color: var(--text-light);
+    font-style: italic;
+}
+
+/* Estilo para botón deshabilitado */
+.btn-secondary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed !important;
+    background-color: #e2e8f0;
+    border-color: #cbd5e0;
+}
+
+/* Estilo para cuando no hay producto seleccionado */
+.no-selection {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-light);
+}
+
+.no-selection .icon {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+
+.no-selection p {
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+}

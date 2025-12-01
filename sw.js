@@ -1,7 +1,7 @@
 // Service Worker para PWA - Calculadora Jamón Curado
 // VERSIÓN 2 - Para forzar actualización
 
-const CACHE_VERSION = 'jamon-calc-v2';
+const CACHE_VERSION = 'jamon-calc-v2.4';  // Cambiar de 'jamon-calc-v2' a 'jamon-calc-v2.4'
 const urlsToCache = [
     './',
     './index.html?v=2.2',

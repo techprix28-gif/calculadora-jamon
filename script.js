@@ -2,7 +2,7 @@
 // DETECCIÓN DE VERSIÓN Y LIMPIEZA DE CACHE
 // ============================================
 
-const APP_VERSION = '2.3.0';
+const APP_VERSION = '2.4.0'; // Actualizada versión por cambios
 const VERSION_KEY = 'app_version';
 
 // Verificar si es nueva versión
@@ -45,6 +45,7 @@ let RECETAS_DB = JSON.parse(localStorage.getItem('RECETAS_DB')) || [
     { id_jamon: 'COPPA', ingrediente: 'Pimentón dulce', unidad: 'g', cantidad: 110 },
     { id_jamon: 'COPPA', ingrediente: 'Pimienta blanca', unidad: 'g', cantidad: 1 },
     { id_jamon: 'COPPA', ingrediente: 'Nuez moscada', unidad: 'g', cantidad: 6 },
+    { id_jamon: 'COPPA', ingrediente: 'Bolsas', unidad: 'unidad', cantidad: 10 }, // AGREGADO
 
     // ========== RECETA PITINA ==========
     { id_jamon: 'PITINA', ingrediente: 'Carne de cerdo', unidad: 'g', cantidad: 1283 },
@@ -62,31 +63,66 @@ let RECETAS_DB = JSON.parse(localStorage.getItem('RECETAS_DB')) || [
     { id_jamon: 'PITINA', ingrediente: 'Ajo molido', unidad: 'g', cantidad: 8 },
     { id_jamon: 'PITINA', ingrediente: 'Harina de maíz', unidad: 'g', cantidad: 183 },
     { id_jamon: 'PITINA', ingrediente: 'Nuez moscada', unidad: 'g', cantidad: 5 },
+    { id_jamon: 'PITINA', ingrediente: 'Bolsas', unidad: 'unidad', cantidad: 10 }, // AGREGADO
 
-    // ========== RECETA PARA PRODUCTOS AHUMADOS (MISMA PARA 5 PRODUCTOS) ==========
-    // Jamón Selva Negra (JAMON-A), Costilla Ahumada (COSTILLA-AHUMADA),
-    // Chuleta Ahumada (CHULETA-AHUMADA), Tocineta (TOCINETA), Lomo Ahumado (LOMO-AHUMADO)
+    // ========== RECETA JAMÓN NEGRO ==========
+    { id_jamon: 'JAMON-NEGRO', ingrediente: 'Carne de cerdo', unidad: 'g', cantidad: 1833 },
+    { id_jamon: 'JAMON-NEGRO', ingrediente: 'Sal', unidad: 'g', cantidad: 38.5 },
+    { id_jamon: 'JAMON-NEGRO', ingrediente: 'Sal de cura', unidad: 'g', cantidad: 5.5 },
+    { id_jamon: 'JAMON-NEGRO', ingrediente: 'Azúcar', unidad: 'g', cantidad: 18 },
+    { id_jamon: 'JAMON-NEGRO', ingrediente: 'Pimienta negra', unidad: 'g', cantidad: 42 },
+    { id_jamon: 'JAMON-NEGRO', ingrediente: 'Pimentón dulce', unidad: 'g', cantidad: 110 },
+    { id_jamon: 'JAMON-NEGRO', ingrediente: 'Pimienta blanca', unidad: 'g', cantidad: 1 },
+    { id_jamon: 'JAMON-NEGRO', ingrediente: 'Nuez moscada', unidad: 'g', cantidad: 6 },
+    { id_jamon: 'JAMON-NEGRO', ingrediente: 'Bolsas', unidad: 'unidad', cantidad: 10 }, // AGREGADO
 
-    // Jamón Selva Negra
-    { id_jamon: 'JAMON-A', ingrediente: 'Carne de cerdo', unidad: 'g', cantidad: 2050 },
-    { id_jamon: 'JAMON-A', ingrediente: 'Agua', unidad: 'ml', cantidad: 1710 },
-    { id_jamon: 'JAMON-A', ingrediente: 'Hielo', unidad: 'g', cantidad: 828 },
-    { id_jamon: 'JAMON-A', ingrediente: 'Sal', unidad: 'g', cantidad: 105 },
-    { id_jamon: 'JAMON-A', ingrediente: 'Sal de cura', unidad: 'g', cantidad: 9 },
-    { id_jamon: 'JAMON-A', ingrediente: 'Azúcar', unidad: 'g', cantidad: 30 },
-    { id_jamon: 'JAMON-A', ingrediente: 'Nitrito', unidad: 'g', cantidad: 18 },
-    { id_jamon: 'JAMON-A', ingrediente: 'Fosfato', unidad: 'g', cantidad: 9 },
-    { id_jamon: 'JAMON-A', ingrediente: 'Glutamato', unidad: 'g', cantidad: 9 },
-    { id_jamon: 'JAMON-A', ingrediente: 'Pimienta guayabita', unidad: 'g', cantidad: 23 },
-    { id_jamon: 'JAMON-A', ingrediente: 'Orégano', unidad: 'g', cantidad: 12 },
-    { id_jamon: 'JAMON-A', ingrediente: 'Romero', unidad: 'g', cantidad: 3 },
-    { id_jamon: 'JAMON-A', ingrediente: 'Nuez moscada', unidad: 'g', cantidad: 1.2 },
-    { id_jamon: 'JAMON-A', ingrediente: 'Ajo', unidad: 'g', cantidad: 23 },
-    { id_jamon: 'JAMON-A', ingrediente: 'Laurel', unidad: 'g', cantidad: 14 },
-    { id_jamon: 'JAMON-A', ingrediente: 'Pimienta negra', unidad: 'g', cantidad: 10 },
-    { id_jamon: 'JAMON-A', ingrediente: 'Tomillo', unidad: 'g', cantidad: 10 },
+    // ========== RECETA JAMÓN SELVA NEGRA/PIMENTÓN DULCE ==========
+    { id_jamon: 'JAMON-PIMENTON', ingrediente: 'Carne de cerdo', unidad: 'g', cantidad: 2050 },
+    { id_jamon: 'JAMON-PIMENTON', ingrediente: 'Agua', unidad: 'ml', cantidad: 1710 },
+    { id_jamon: 'JAMON-PIMENTON', ingrediente: 'Hielo', unidad: 'g', cantidad: 828 },
+    { id_jamon: 'JAMON-PIMENTON', ingrediente: 'Sal', unidad: 'g', cantidad: 105 },
+    { id_jamon: 'JAMON-PIMENTON', ingrediente: 'Sal de cura', unidad: 'g', cantidad: 9 },
+    { id_jamon: 'JAMON-PIMENTON', ingrediente: 'Azúcar', unidad: 'g', cantidad: 30 },
+    { id_jamon: 'JAMON-PIMENTON', ingrediente: 'Nitrito', unidad: 'g', cantidad: 18 },
+    { id_jamon: 'JAMON-PIMENTON', ingrediente: 'Fosfato', unidad: 'g', cantidad: 9 },
+    { id_jamon: 'JAMON-PIMENTON', ingrediente: 'Glutamato', unidad: 'g', cantidad: 9 },
+    { id_jamon: 'JAMON-PIMENTON', ingrediente: 'Pimienta guayabita', unidad: 'g', cantidad: 23 },
+    { id_jamon: 'JAMON-PIMENTON', ingrediente: 'Orégano', unidad: 'g', cantidad: 12 },
+    { id_jamon: 'JAMON-PIMENTON', ingrediente: 'Romero', unidad: 'g', cantidad: 3 },
+    { id_jamon: 'JAMON-PIMENTON', ingrediente: 'Nuez moscada', unidad: 'g', cantidad: 1.2 },
+    { id_jamon: 'JAMON-PIMENTON', ingrediente: 'Ajo', unidad: 'g', cantidad: 23 },
+    { id_jamon: 'JAMON-PIMENTON', ingrediente: 'Laurel', unidad: 'g', cantidad: 14 },
+    { id_jamon: 'JAMON-PIMENTON', ingrediente: 'Pimienta negra', unidad: 'g', cantidad: 10 },
+    { id_jamon: 'JAMON-PIMENTON', ingrediente: 'Tomillo', unidad: 'g', cantidad: 10 },
+    { id_jamon: 'JAMON-PIMENTON', ingrediente: 'Pimentón dulce', unidad: 'g', cantidad: 12 },
+    { id_jamon: 'JAMON-PIMENTON', ingrediente: 'Orégano mix', unidad: 'g', cantidad: 1 },
+    { id_jamon: 'JAMON-PIMENTON', ingrediente: 'Pimienta negra mix', unidad: 'g', cantidad: 2.5 },
+    { id_jamon: 'JAMON-PIMENTON', ingrediente: 'Bolsas', unidad: 'unidad', cantidad: 10 },
 
-    // Costilla Ahumada (MISMA RECETA)
+    // ========== RECETA JAMÓN SELVA NEGRA CON MOSTAZA Y MIEL ==========
+    { id_jamon: 'JAMON-MOSTAZA', ingrediente: 'Carne de cerdo', unidad: 'g', cantidad: 2050 },
+    { id_jamon: 'JAMON-MOSTAZA', ingrediente: 'Agua', unidad: 'ml', cantidad: 1710 },
+    { id_jamon: 'JAMON-MOSTAZA', ingrediente: 'Hielo', unidad: 'g', cantidad: 828 },
+    { id_jamon: 'JAMON-MOSTAZA', ingrediente: 'Sal', unidad: 'g', cantidad: 105 },
+    { id_jamon: 'JAMON-MOSTAZA', ingrediente: 'Sal de cura', unidad: 'g', cantidad: 9 },
+    { id_jamon: 'JAMON-MOSTAZA', ingrediente: 'Azúcar', unidad: 'g', cantidad: 30 },
+    { id_jamon: 'JAMON-MOSTAZA', ingrediente: 'Nitrito', unidad: 'g', cantidad: 18 },
+    { id_jamon: 'JAMON-MOSTAZA', ingrediente: 'Fosfato', unidad: 'g', cantidad: 9 },
+    { id_jamon: 'JAMON-MOSTAZA', ingrediente: 'Glutamato', unidad: 'g', cantidad: 9 },
+    { id_jamon: 'JAMON-MOSTAZA', ingrediente: 'Pimienta guayabita', unidad: 'g', cantidad: 23 },
+    { id_jamon: 'JAMON-MOSTAZA', ingrediente: 'Orégano', unidad: 'g', cantidad: 12 },
+    { id_jamon: 'JAMON-MOSTAZA', ingrediente: 'Romero', unidad: 'g', cantidad: 3 },
+    { id_jamon: 'JAMON-MOSTAZA', ingrediente: 'Nuez moscada', unidad: 'g', cantidad: 1.2 },
+    { id_jamon: 'JAMON-MOSTAZA', ingrediente: 'Ajo', unidad: 'g', cantidad: 23 },
+    { id_jamon: 'JAMON-MOSTAZA', ingrediente: 'Laurel', unidad: 'g', cantidad: 14 },
+    { id_jamon: 'JAMON-MOSTAZA', ingrediente: 'Pimienta negra', unidad: 'g', cantidad: 10 },
+    { id_jamon: 'JAMON-MOSTAZA', ingrediente: 'Tomillo', unidad: 'g', cantidad: 10 },
+    { id_jamon: 'JAMON-MOSTAZA', ingrediente: 'Mostaza', unidad: 'ml', cantidad: 150 },
+    { id_jamon: 'JAMON-MOSTAZA', ingrediente: 'Miel', unidad: 'ml', cantidad: 50 },
+    { id_jamon: 'JAMON-MOSTAZA', ingrediente: 'Pimienta negra mix', unidad: 'g', cantidad: 1 },
+    { id_jamon: 'JAMON-MOSTAZA', ingrediente: 'Bolsas', unidad: 'unidad', cantidad: 10 },
+
+    // ========== RECETA COSTILLA AHUMADA (ACTUALIZADA CON 2 BOLSAS) ==========
     { id_jamon: 'COSTILLA-AHUMADA', ingrediente: 'Carne de cerdo', unidad: 'g', cantidad: 2050 },
     { id_jamon: 'COSTILLA-AHUMADA', ingrediente: 'Agua', unidad: 'ml', cantidad: 1710 },
     { id_jamon: 'COSTILLA-AHUMADA', ingrediente: 'Hielo', unidad: 'g', cantidad: 828 },
@@ -104,8 +140,9 @@ let RECETAS_DB = JSON.parse(localStorage.getItem('RECETAS_DB')) || [
     { id_jamon: 'COSTILLA-AHUMADA', ingrediente: 'Laurel', unidad: 'g', cantidad: 14 },
     { id_jamon: 'COSTILLA-AHUMADA', ingrediente: 'Pimienta negra', unidad: 'g', cantidad: 10 },
     { id_jamon: 'COSTILLA-AHUMADA', ingrediente: 'Tomillo', unidad: 'g', cantidad: 10 },
+    { id_jamon: 'COSTILLA-AHUMADA', ingrediente: 'Bolsas', unidad: 'unidad', cantidad: 2 }, // AGREGADO 2 BOLSAS
 
-    // Chuleta Ahumada (MISMA RECETA)
+    // ========== RECETA CHULETA AHUMADA (ACTUALIZADA CON 2 BOLSAS) ==========
     { id_jamon: 'CHULETA-AHUMADA', ingrediente: 'Carne de cerdo', unidad: 'g', cantidad: 2050 },
     { id_jamon: 'CHULETA-AHUMADA', ingrediente: 'Agua', unidad: 'ml', cantidad: 1710 },
     { id_jamon: 'CHULETA-AHUMADA', ingrediente: 'Hielo', unidad: 'g', cantidad: 828 },
@@ -123,8 +160,9 @@ let RECETAS_DB = JSON.parse(localStorage.getItem('RECETAS_DB')) || [
     { id_jamon: 'CHULETA-AHUMADA', ingrediente: 'Laurel', unidad: 'g', cantidad: 14 },
     { id_jamon: 'CHULETA-AHUMADA', ingrediente: 'Pimienta negra', unidad: 'g', cantidad: 10 },
     { id_jamon: 'CHULETA-AHUMADA', ingrediente: 'Tomillo', unidad: 'g', cantidad: 10 },
+    { id_jamon: 'CHULETA-AHUMADA', ingrediente: 'Bolsas', unidad: 'unidad', cantidad: 2 }, // AGREGADO 2 BOLSAS
 
-    // Tocineta (MISMA RECETA)
+    // ========== RECETA TOCINETA ==========
     { id_jamon: 'TOCINETA', ingrediente: 'Carne de cerdo', unidad: 'g', cantidad: 2050 },
     { id_jamon: 'TOCINETA', ingrediente: 'Agua', unidad: 'ml', cantidad: 1710 },
     { id_jamon: 'TOCINETA', ingrediente: 'Hielo', unidad: 'g', cantidad: 828 },
@@ -143,7 +181,7 @@ let RECETAS_DB = JSON.parse(localStorage.getItem('RECETAS_DB')) || [
     { id_jamon: 'TOCINETA', ingrediente: 'Pimienta negra', unidad: 'g', cantidad: 10 },
     { id_jamon: 'TOCINETA', ingrediente: 'Tomillo', unidad: 'g', cantidad: 10 },
 
-    // Lomo Ahumado (MISMA RECETA)
+    // ========== RECETA LOMO AHUMADO (ACTUALIZADA CON 10 BOLSAS) ==========
     { id_jamon: 'LOMO-AHUMADO', ingrediente: 'Carne de cerdo', unidad: 'g', cantidad: 2050 },
     { id_jamon: 'LOMO-AHUMADO', ingrediente: 'Agua', unidad: 'ml', cantidad: 1710 },
     { id_jamon: 'LOMO-AHUMADO', ingrediente: 'Hielo', unidad: 'g', cantidad: 828 },
@@ -160,10 +198,56 @@ let RECETAS_DB = JSON.parse(localStorage.getItem('RECETAS_DB')) || [
     { id_jamon: 'LOMO-AHUMADO', ingrediente: 'Ajo', unidad: 'g', cantidad: 23 },
     { id_jamon: 'LOMO-AHUMADO', ingrediente: 'Laurel', unidad: 'g', cantidad: 14 },
     { id_jamon: 'LOMO-AHUMADO', ingrediente: 'Pimienta negra', unidad: 'g', cantidad: 10 },
-    { id_jamon: 'LOMO-AHUMADO', ingrediente: 'Tomillo', unidad: 'g', cantidad: 10 }
+    { id_jamon: 'LOMO-AHUMADO', ingrediente: 'Tomillo', unidad: 'g', cantidad: 10 },
+    { id_jamon: 'LOMO-AHUMADO', ingrediente: 'Bolsas', unidad: 'unidad', cantidad: 10 }, // AGREGADO 10 BOLSAS
+
+    // ========== RECETA RODILLA DE CERDO ==========
+    { id_jamon: 'RODILLA-CERDO', ingrediente: 'Carne de cerdo', unidad: 'g', cantidad: 2050 },
+    { id_jamon: 'RODILLA-CERDO', ingrediente: 'Agua', unidad: 'ml', cantidad: 1710 },
+    { id_jamon: 'RODILLA-CERDO', ingrediente: 'Hielo', unidad: 'g', cantidad: 828 },
+    { id_jamon: 'RODILLA-CERDO', ingrediente: 'Sal', unidad: 'g', cantidad: 105 },
+    { id_jamon: 'RODILLA-CERDO', ingrediente: 'Sal de cura', unidad: 'g', cantidad: 9 },
+    { id_jamon: 'RODILLA-CERDO', ingrediente: 'Azúcar', unidad: 'g', cantidad: 30 },
+    { id_jamon: 'RODILLA-CERDO', ingrediente: 'Nitrito', unidad: 'g', cantidad: 18 },
+    { id_jamon: 'RODILLA-CERDO', ingrediente: 'Fosfato', unidad: 'g', cantidad: 9 },
+    { id_jamon: 'RODILLA-CERDO', ingrediente: 'Glutamato', unidad: 'g', cantidad: 9 },
+    { id_jamon: 'RODILLA-CERDO', ingrediente: 'Pimienta guayabita', unidad: 'g', cantidad: 23 },
+    { id_jamon: 'RODILLA-CERDO', ingrediente: 'Orégano', unidad: 'g', cantidad: 12 },
+    { id_jamon: 'RODILLA-CERDO', ingrediente: 'Romero', unidad: 'g', cantidad: 3 },
+    { id_jamon: 'RODILLA-CERDO', ingrediente: 'Nuez moscada', unidad: 'g', cantidad: 1.2 },
+    { id_jamon: 'RODILLA-CERDO', ingrediente: 'Ajo', unidad: 'g', cantidad: 23 },
+    { id_jamon: 'RODILLA-CERDO', ingrediente: 'Laurel', unidad: 'g', cantidad: 14 },
+    { id_jamon: 'RODILLA-CERDO', ingrediente: 'Pimienta negra', unidad: 'g', cantidad: 10 },
+    { id_jamon: 'RODILLA-CERDO', ingrediente: 'Tomillo', unidad: 'g', cantidad: 10 },
+    { id_jamon: 'RODILLA-CERDO', ingrediente: 'Pimentón dulce', unidad: 'g', cantidad: 12 },
+    { id_jamon: 'RODILLA-CERDO', ingrediente: 'Orégano mix', unidad: 'g', cantidad: 1 },
+    { id_jamon: 'RODILLA-CERDO', ingrediente: 'Pimienta negra mix', unidad: 'g', cantidad: 2.5 },
+    { id_jamon: 'RODILLA-CERDO', ingrediente: 'Bolsas', unidad: 'unidad', cantidad: 1 },
+
+    // ========== RECETA CHORIZO CURADO ==========
+    { id_jamon: 'CHORIZO-CURADO', ingrediente: 'Carne de cerdo', unidad: 'g', cantidad: 1283 },
+    { id_jamon: 'CHORIZO-CURADO', ingrediente: 'Carne de res', unidad: 'g', cantidad: 367 },
+    { id_jamon: 'CHORIZO-CURADO', ingrediente: 'Tocino', unidad: 'g', cantidad: 183 },
+    { id_jamon: 'CHORIZO-CURADO', ingrediente: 'Sal', unidad: 'g', cantidad: 38.5 },
+    { id_jamon: 'CHORIZO-CURADO', ingrediente: 'Sal de cura', unidad: 'g', cantidad: 5.5 },
+    { id_jamon: 'CHORIZO-CURADO', ingrediente: 'Azúcar', unidad: 'g', cantidad: 18 },
+    { id_jamon: 'CHORIZO-CURADO', ingrediente: 'Eritorbato', unidad: 'g', cantidad: 9 },
+    { id_jamon: 'CHORIZO-CURADO', ingrediente: 'Fosfato', unidad: 'g', cantidad: 9 },
+    { id_jamon: 'CHORIZO-CURADO', ingrediente: 'Vino tinto', unidad: 'ml', cantidad: 42 },
+    { id_jamon: 'CHORIZO-CURADO', ingrediente: 'Pimienta negra', unidad: 'g', cantidad: 2.8 },
+    { id_jamon: 'CHORIZO-CURADO', ingrediente: 'Pimentón dulce', unidad: 'g', cantidad: 3 },
+    { id_jamon: 'CHORIZO-CURADO', ingrediente: 'Pimienta blanca', unidad: 'g', cantidad: 1.5 },
+    { id_jamon: 'CHORIZO-CURADO', ingrediente: 'Ajo molido', unidad: 'g', cantidad: 8 },
+    { id_jamon: 'CHORIZO-CURADO', ingrediente: 'Nuez moscada', unidad: 'g', cantidad: 5 },
+    { id_jamon: 'CHORIZO-CURADO', ingrediente: 'Tripa de cerdo', unidad: 'm', cantidad: 4 },
+    { id_jamon: 'CHORIZO-CURADO', ingrediente: 'Bolsas', unidad: 'unidad', cantidad: 10 },
+
+    // ========== RECETA CHORIZO COLONIERO ==========
+    { id_jamon: 'CHORIZO-COLONIERO', ingrediente: 'Carne de cerdo', unidad: 'g', cantidad: 1000 },
+    { id_jamon: 'CHORIZO-COLONIERO', ingrediente: 'Sal', unidad: 'g', cantidad: 20 }
 ];
 
-// B. TABLA DE COSTOS UNITARIOS (USD por Kg/L) - ACTUALIZADA
+// B. TABLA DE COSTOS UNITARIOS (USD por Kg/L) - ACTUALIZADA CON NUEVOS INGREDIENTES
 let COSTOS_DB = JSON.parse(localStorage.getItem('COSTOS_DB')) || {
     // Carnes y Base
     'Carne de cerdo': 3.5,
@@ -229,6 +313,12 @@ let COSTOS_DB = JSON.parse(localStorage.getItem('COSTOS_DB')) || {
     'Especias Secretas': 15.0,
     'Hierbas': 15.0,
     'Comino': 12.0,
+
+    // NUEVOS INGREDIENTES AGREGADOS
+    'Pimienta negra mix': 15.0,      // $15/kg - NUEVO
+    'Bolsas': 0.095,                 // $0.095/unidad - NUEVO
+    'Orégano mix': 20.0,             // $20/kg - NUEVO
+    'Tripa de cerdo': 3.3,           // $3.3/metro - NUEVO
 
     // Otros
     'Harina de maíz': 1.3,
@@ -352,6 +442,12 @@ function calculate() {
             } else if (unidad === 'ml') {
                 const cantidadL = cantidadEscalada / 1000;
                 costoIngrediente = cantidadL * precioPorUnidad;
+            } else if (unidad === 'unidad') {
+                // Para bolsas y otros por unidad
+                costoIngrediente = cantidadEscalada * precioPorUnidad;
+            } else if (unidad === 'm') {
+                // Para tripa de cerdo por metro
+                costoIngrediente = cantidadEscalada * precioPorUnidad;
             } else {
                 costoIngrediente = cantidadEscalada * (precioPorUnidad / 1000);
             }
@@ -510,9 +606,9 @@ function renderIngredients(ingredientsArray) {
         const row = document.createElement('div');
         row.className = 'price-row';
         row.innerHTML = `
-            <label>${ingrediente} (USD por Kg/L)</label>
+            <label>${ingrediente} (USD por Kg/L/unidad)</label>
             <div class="input-wrapper">
-                <input type="number" class="price-input" data-ingrediente="${ingrediente}" value="${precio}" step="0.01" min="0">
+                <input type="number" class="price-input" data-ingrediente="${ingrediente}" value="${precio}" step="0.001" min="0">
                 <span class="currency-label">$</span>
             </div>
         `;
@@ -592,7 +688,13 @@ function openRecipeModal() {
             const cantidadBase = item.cantidad;
             const unidad = item.unidad;
             const cantidadEscalada = cantidadBase * scaleFactor;
-            const unidadDisplay = unidad === 'ml' ? 'ml' : 'g';
+
+            // Determinar unidad de display
+            let unidadDisplay = unidad;
+            if (unidad === 'ml') unidadDisplay = 'ml';
+            else if (unidad === 'unidad') unidadDisplay = 'unidad';
+            else if (unidad === 'm') unidadDisplay = 'm';
+            else unidadDisplay = 'g';
 
             const row = document.createElement('div');
             row.className = 'price-row';
@@ -713,9 +815,9 @@ function addNewIngredient() {
     const ingredienteName = prompt('Nombre del nuevo ingrediente:');
     if (!ingredienteName) return;
 
-    const unidad = prompt(`Unidad para ${ingredienteName} (g o ml):`, 'g');
-    if (!['g', 'ml'].includes(unidad)) {
-        alert('Unidad no válida. Use "g" o "ml".');
+    const unidad = prompt(`Unidad para ${ingredienteName} (g, ml, unidad, m):`, 'g');
+    if (!['g', 'ml', 'unidad', 'm'].includes(unidad)) {
+        alert('Unidad no válida. Use "g", "ml", "unidad" o "m".');
         return;
     }
 
